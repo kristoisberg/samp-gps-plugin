@@ -2,19 +2,20 @@
 #include <string>
 #include <iostream>
 
-#include "../lib/sdk/amx/amx.h"
+#include "../lib/sdk/amx/amx2.h"
 #include "../lib/sdk/plugincommon.h"
 
 #include "common.h"
 #include "pathfinder.h"
 #include "natives.h"
+#include "amx.h"
 
 
 logprintf_t logprintf;
 
 
 PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports() {
-	return SUPPORTS_VERSION | SUPPORTS_AMX_NATIVES;
+	return SUPPORTS_VERSION | SUPPORTS_AMX_NATIVES | SUPPORTS_PROCESS_TICK;
 }
 
 
@@ -75,17 +76,34 @@ PLUGIN_EXPORT void PLUGIN_CALL Unload() {
 
 
 AMX_NATIVE_INFO PluginNatives[] = {
-	{"IsValidNode", 			Natives::IsValidNode},
-	{"GetNodePos",				Natives::GetNodePos},
-	{"FindPathFromNodeToNode",	Natives::FindPathFromNodeToNode},
-	{"IsValidPath", 			Natives::IsValidPath},
-	{"GetPathSize",				Natives::GetPathSize},
-	{"GetPathLength",			Natives::GetPathLength},
-	{"GetPathNode",				Natives::GetPathNode},
+	{"IsValidNode", 					Natives::IsValidNode},
+	{"GetNodePos",						Natives::GetNodePos},
+	{"FindPathFromNodeToNode",			Natives::FindPathFromNodeToNode},
+	{"FindPathFromNodeToNodeThreaded",	Natives::FindPathFromNodeToNodeThreaded},
+	{"IsValidPath", 					Natives::IsValidPath},
+	{"GetPathSize",						Natives::GetPathSize},
+	{"GetPathLength",					Natives::GetPathLength},
+	{"GetPathNode",						Natives::GetPathNode},
 	{0, 0}
 };
 
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx) {
+	amx::load(amx);
+
 	return amx_Register(amx, PluginNatives, -1);
+}
+
+
+PLUGIN_EXPORT int PLUGIN_CALL AmxUnload(AMX* amx) {
+    amx::unload(amx);
+
+    return 1;
+}
+
+
+PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
+    for (std::pair<AMX*, AMXInfo> i : amx_list) {
+        amx::processTick(i.first);
+    }
 }

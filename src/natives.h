@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../lib/sdk/amx/amx.h"
+#include "../lib/sdk/amx/amx2.h"
 
 #include "common.h"
 #include "pathfinder.h"
@@ -17,6 +17,7 @@ namespace Natives {
     cell AMX_NATIVE_CALL IsValidNode(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetNodePos(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL FindPathFromNodeToNode(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL FindPathFromNodeToNodeThreaded(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL IsValidPath(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetPathSize(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetPathLength(AMX* amx, cell* params);

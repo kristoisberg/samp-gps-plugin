@@ -1,4 +1,6 @@
 #include <map>
+#include <thread>
+#include <iostream>
 
 #include "natives.h"
 
@@ -56,6 +58,38 @@ namespace Natives {
         }
 
         return Pathfinder::FindPathFromNodeToNode(start, target);
+    }
+
+
+    cell AMX_NATIVE_CALL FindPathFromNodeToNodeThreaded(AMX* amx, cell* params) {
+        CHECK_PARAMS(4);
+
+        int start_id = static_cast<int>(params[1]);
+        Pathfinder::Node* start = Pathfinder::GetNodeByID(start_id);
+
+        if (start == nullptr) {
+            return 0;
+        }
+
+        int target_id = static_cast<int>(params[2]);
+        Pathfinder::Node* target = Pathfinder::GetNodeByID(target_id);
+
+        if (target == nullptr) {
+            return 0;
+        }
+
+        std::string callback = amx_GetCppString(amx, params[3]);
+        int id = static_cast<int>(params[4]);
+
+        try {
+            std::thread t(Pathfinder::FindPathFromNodeToNodeThreaded, amx, start, target, callback, id);
+            t.detach();
+        } catch (std::exception e) {
+            std::cout << "Failed to dispatch thread: " << e.what() << "\n";
+            return 0;
+        }
+
+        return 1;
     }
 
 

@@ -5,6 +5,7 @@
 #include <functional>
 
 #include "pathfinder.h"
+#include "amx.h"
 
 
 namespace Pathfinder {
@@ -64,11 +65,9 @@ namespace Pathfinder {
     }
 
 
-    int FindPathFromNodeToNode(Node* start, Node* target) {
+    Path* FindPath(Node* start, Node* target) {
         if (start == target) {
-            int id = path_count++;
-            paths[id] = Path{{start}, 0.0f};
-            return id;
+            return new Path{{start}, 0.0f};
         }
 
         std::priority_queue<ShortestPathTo*> queue;
@@ -109,74 +108,45 @@ namespace Pathfinder {
         }
 
         if (solution == nullptr) {
-            return -1;
+            return nullptr;
         }
 
-        Path result = Path();
+        Path* result = new Path();
+        result->length = solution->distance;
 
         while (solution != nullptr) {
-            result.nodes.insert(result.nodes.begin(), solution->node);
+            result->nodes.insert(result->nodes.begin(), solution->node);
 
             solution = solution->previous;
         }
 
+        return result;
+    }
+
+
+    int FindPathFromNodeToNode(Node* start, Node* target) {
+        Path* path = FindPath(start, target);
+
+        if (path == nullptr) {
+            return -1;
+        }
+
         int id = path_count++;
-        paths[id] = result;
+        paths[id] = *path;
         return id;
     }
 
 
-    /*int FindPathFromNodeToNode(Node* start, Node* target) {
-        std::priority_queue<ShortestPathTo*, std::vector<ShortestPathTo*>, std::function<bool(ShortestPathTo*, ShortestPathTo*)>> queue(ComparePaths);
-        std::map<Node*, ShortestPathTo*> existing_paths;
+    void FindPathFromNodeToNodeThreaded(AMX* amx, Node* start, Node* target, std::string callback, int extra_id) {
+        Path* path = FindPath(start, target);
 
-        
-
-        ShortestPathTo* solution = nullptr;
-        ShortestPathTo* path = nullptr;
-        ShortestPathTo* next_path = nullptr;
-        float solution_distance = 0.0f, path_distance = 0.0f, current_distance = 0.0f;
-
-        while (!queue.empty()) {
-            path = queue.top();
-            current_distance = GetPathLength(path);
-            queue.pop();
-
-            for (Connection const& connection : path->node->connections) {
-                path_distance = current_distance + connection.distance;
-
-                std::cout << path->node->id << " > " << connection.target->id << ": " << path_distance << "\n";
-
-                if (solution != nullptr && path_distance > solution_distance) {
-                    continue;
-                }
-
-                auto it = existing_paths.find(connection.target);
-
-                if (it != existing_paths.end()) {
-                    next_path = it->second;
-
-                    if (GetPathLength(next_path) > path_distance) {
-                        next_path->previous = path;
-
-                        if (next_path == solution) {
-                            solution_distance = path_distance;
-                        }
-                    }
-                } else {
-                    next_path = new ShortestPathTo{connection.target, path};
-
-                    existing_paths[connection.target] = next_path;
-
-                    if (connection.target == target) {
-                        solution = next_path;
-                        solution_distance = path_distance;
-                    }
-
-                    queue.push(next_path);
-                }
-            }
+        if (path == nullptr) {
+            return;
         }
 
-    }*/
+        int id = path_count++;
+        paths[id] = *path;
+
+        amx_list[amx].callback_queue.push_back({id, callback, extra_id});
+    }
 };

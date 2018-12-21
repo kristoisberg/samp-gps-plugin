@@ -15,6 +15,7 @@
 native bool:IsValidNode(MapNode:nodeid);
 native GetNodePos(MapNode:nodeid, &Float:x, &Float:y, &Float:z);
 native Path:FindPathFromNodeToNode(MapNode:start, MapNode:target);
+native FindPathFromNodeToNodeThreaded(MapNode:start, MapNode:target, const callback[], id = 0);
 native bool:IsValidPath(Path:pathid);
 native GetPathSize(Path:pathid);
 native GetPathLength(Path:pathid);

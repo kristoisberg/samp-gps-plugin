@@ -4,6 +4,8 @@
 #include <map>
 #include <limits>
 
+#include "../lib/sdk/amx/amx2.h"
+
 
 namespace Pathfinder {
     struct Connection; 
@@ -45,5 +47,6 @@ namespace Pathfinder {
     bool AddConnection(int startid, int targetid);
     Node* GetNodeByID(int id);
     int FindPathFromNodeToNode(Node* start, Node* target);
+    void FindPathFromNodeToNodeThreaded(AMX* amx, Node* start, Node* target, std::string callback, int id);
     Path* GetPathByID(int id);
 };
