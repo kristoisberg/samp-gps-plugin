@@ -89,7 +89,7 @@ namespace Natives {
         Pathfinder::Path* path = Pathfinder::GetPathByID(id);
         float result = 0.0f;
 
-        if (path == nullptr) {
+        if (path != nullptr) {
             result = path->length;
         }
 
