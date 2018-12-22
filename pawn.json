@@ -4,9 +4,17 @@
 	"entry": "test.pwn",
 	"output": "test.amx",
 	"dependencies": [
-		"sampctl/samp-stdlib"
+		"sampctl/samp-stdlib",
+		"IllidanS4/PawnPlus"
 	],
 	"runtime": {
-		"mode": "y_testing"
+		"version": "0.3.7",
+		"mode": "y_testing",
+		"echo": "Loading configuration...",
+		"rcon_password": "password",
+		"port": 8192,
+		"hostname": "SA-MP Server",
+		"maxplayers": 50,
+		"language": ""
 	}
 }

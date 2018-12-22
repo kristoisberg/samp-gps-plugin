@@ -32,16 +32,6 @@ namespace Pathfinder {
     } 
 
 
-    float GetNodeDistanceFromPoint(Node* node, float x, float y, float z) {
-        return sqrt(pow(node->x - x, 2.0f) + pow(node->y - y, 2.0f) + pow(node->z - z, 2.0f));
-    }
-
-
-    float GetDistanceBetweenNodes(Node* first, Node* second) {
-        return GetNodeDistanceFromPoint(first, second->x, second->y, second->z);
-    }
-
-
     bool AddConnection(int startid, int targetid) {
         Node* start = GetNodeByID(startid);
 
@@ -71,18 +61,17 @@ namespace Pathfinder {
     }
 
 
-    Path* GetPathByID(int id) {
-        auto path = paths.find(id);
-
-        if (path != paths.end()) {
-            return &path->second;
-        } else {
-            return nullptr;
-        }
+    float GetNodeDistanceFromPoint(Node* node, float x, float y, float z) {
+        return sqrt(pow(node->x - x, 2.0f) + pow(node->y - y, 2.0f) + pow(node->z - z, 2.0f));
     }
 
 
-    Path* FindPath(Node* start, Node* target) {
+    float GetDistanceBetweenNodes(Node* first, Node* second) {
+        return GetNodeDistanceFromPoint(first, second->x, second->y, second->z);
+    }
+
+
+    Path* FindPathInternal(Node* start, Node* target) {
         if (start == target) {
             return new Path{{start}, 0.0f};
         }
@@ -149,8 +138,8 @@ namespace Pathfinder {
     }
 
 
-    int FindPathFromNodeToNode(Node* start, Node* target) {
-        Path* path = FindPath(start, target);
+    int FindPath(Node* start, Node* target) {
+        Path* path = FindPathInternal(start, target);
 
         if (path == nullptr) {
             return -1;
@@ -162,8 +151,8 @@ namespace Pathfinder {
     }
 
 
-    void FindPathFromNodeToNodeThreaded(AMX* amx, Node* start, Node* target, std::string callback, int extra_id) {
-        Path* path = FindPath(start, target);
+    void FindPathThreaded(AMX* amx, Node* start, Node* target, std::string callback, int extra_id) {
+        Path* path = FindPathInternal(start, target);
 
         if (path == nullptr) {
             return;
@@ -173,5 +162,16 @@ namespace Pathfinder {
         paths[id] = *path;
 
         amx_list[amx].callback_queue.push_back({id, callback, extra_id});
+    }
+
+
+    Path* GetPathByID(int id) {
+        auto path = paths.find(id);
+
+        if (path != paths.end()) {
+            return &path->second;
+        } else {
+            return nullptr;
+        }
     }
 };

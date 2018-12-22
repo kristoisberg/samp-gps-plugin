@@ -1,70 +1,76 @@
 #include <a_samp>
+#include <PawnPlus>
 
 #include "gps.inc"
 
 
+#define THREADING_TEST_COUNT 1000
+
+new ThreadingTestCount;
+
+
 main() {
-    Test(MapNode:1,  MapNode:2);
+    /*Test(MapNode:1,  MapNode:2);
     Test(MapNode:82, MapNode:90);
-    Test(MapNode:1,  MapNode:27751);
+    Test(MapNode:1,  MapNode:27751);*/
 
-    /*new MapNode:start = MapNode:1, MapNode:target = MapNode:27751, Float:x, Float:y, Float:z;
-
-    GetNodePos(start, x, y, z);
-    printf("Start: %f %f %f", x, y, z);
-
-    GetNodePos(target, x, y, z);
-    printf("Target: %f %f %f", x, y, z);
-
-    new tick = GetTickCount(), Path:path = FindPathFromNodeToNode(start, target);
-
-    printf("non-threaded: %ims", GetTickCount() - tick);
-
-    new size = GetPathSize(path);
-
-    printf("NON-THREADED:");
-    printf("Valid: %s | Distance: %fm | Amount of nodes: %i", IsValidPath(path) ? ("Yes") : ("No"), GetPathLength(path), size);
-
-    for (new i; i < size; i++) {
-        GetNodePos(GetPathNode(path, i), x, y, z);
-        printf("%i: %f %f %f", i + 1, x, y, z);
+    for (new i; i < THREADING_TEST_COUNT; i++) {
+        FindPathThreaded(MapNode:1, MapNode:1, "ThreadingTestResponse");
     }
+}
 
-    FindPathFromNodeToNodeThreaded(start, target, "OnGPSResponse", GetTickCount());*/
+forward public ThreadingTestResponse(Path:path);
+public ThreadingTestResponse(Path:path) {
+    ThreadingTestCount++;
+    printf("%i/%i", ThreadingTestCount, THREADING_TEST_COUNT);
 }
 
 
-Test(MapNode:start, MapNode:target) {
+/*Test(MapNode:start, MapNode:target) {
     new Float:x, Float:y, Float:z;
 
-    GetNodePos(start, x, y, z);
+    GetMapNodePos(start, x, y, z);
     printf("Start: %f %f %f", x, y, z);
 
-    GetNodePos(target, x, y, z);
+    GetMapNodePos(target, x, y, z);
     printf("Target: %f %f %f", x, y, z);
 
-    new start_tick = GetTickCount(), Path:path = FindPathFromNodeToNode(start, target), end_tick = GetTickCount(), size = GetPathSize(path);
+    new tick = GetTickCount(), Path:path;
+    FindPath(start, target, path);
 
-    printf("Time: %ims | Valid: %s | Distance: %fm | Amount of nodes: %i", end_tick - start_tick, IsValidPath(path) ? ("Yes") : ("No"), GetPathLength(path), size);
+    printf("NON-THREADED: %ims", GetTickCount() - tick);
+    Test2(path);
 
-    for (new i; i < size; i++) {
-        GetNodePos(GetPathNode(path, i), x, y, z);
-        printf("%i: %f %f %f", i + 1, x, y, z);
-    }
+    FindPathThreaded(start, target, "TestResponse", GetTickCount());
+
+    tick = GetTickCount();
+    path = Path:task_await(FindPathAsync(start, target));
+
+    printf("ASYNC: %ims", GetTickCount() - tick);
+    Test2(path);
 }
 
 
-/*forward public OnGPSResponse(Path:path, tick);
-public OnGPSResponse(Path:path, tick) {
-    printf("threaded: %ims", GetTickCount() - tick);
+Test2(Path:path) {
+    new Float:x, Float:y, Float:z, size, Float:length, MapNode:node;
+    GetPathSize(path, size);
+    GetPathLength(path, length);
 
-    new size = GetPathSize(path), Float:x, Float:y, Float:z;
-
-    printf("THREADED:");
-    printf("Valid: %s | Distance: %fm | Amount of nodes: %i", IsValidPath(path) ? ("Yes") : ("No"), GetPathLength(path), size);
+    printf("Valid: %s | Distance: %fm | Amount of nodes: %i", IsValidPath(path) ? ("Yes") : ("No"), length, size);
 
     for (new i; i < size; i++) {
-        GetNodePos(GetPathNode(path, i), x, y, z);
+        GetPathNode(path, i, node);
+        GetMapNodePos(node, x, y, z);
         printf("%i: %f %f %f", i + 1, x, y, z);
     }
+
+    DestroyPath(path);
+    printf("Destroyed | Valid: %s", IsValidPath(path) ? ("Yes") : ("No"));
+}
+
+
+forward public TestResponse(Path:path, tick);
+public TestResponse(Path:path, tick) {
+    printf("THREADED: %ims", GetTickCount() - tick);
+    Test2(path);
 }*/

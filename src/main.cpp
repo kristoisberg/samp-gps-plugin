@@ -76,14 +76,21 @@ PLUGIN_EXPORT void PLUGIN_CALL Unload() {
 
 
 AMX_NATIVE_INFO PluginNatives[] = {
-	{"IsValidNode", 					Natives::IsValidNode},
-	{"GetNodePos",						Natives::GetNodePos},
-	{"FindPathFromNodeToNode",			Natives::FindPathFromNodeToNode},
-	{"FindPathFromNodeToNodeThreaded",	Natives::FindPathFromNodeToNodeThreaded},
-	{"IsValidPath", 					Natives::IsValidPath},
-	{"GetPathSize",						Natives::GetPathSize},
-	{"GetPathLength",					Natives::GetPathLength},
-	{"GetPathNode",						Natives::GetPathNode},
+	{"IsValidMapNode", 				Natives::IsValidNode},
+	{"GetMapNodePos",				Natives::GetNodePos},
+	{"GetDistanceBetweenMapNodes",	Natives::GetDistanceBetweenNodes},
+	{"GetMapNodeDistanceFromPoint",	Natives::GetNodeDistanceFromPoint},
+	{"GetClosestMapNodeToPoint",	Natives::GetClosestNodeToPoint},
+
+	{"FindPath",					Natives::FindPath},
+	{"FindPathThreaded",			Natives::FindPathThreaded},
+
+	{"IsValidPath", 				Natives::IsValidPath},
+	{"GetPathSize",					Natives::GetPathSize},
+	{"GetPathLength",				Natives::GetPathLength},
+	{"GetPathNode",					Natives::GetPathNode},
+	{"DestroyPath",					Natives::DestroyPath},
+
 	{0, 0}
 };
 

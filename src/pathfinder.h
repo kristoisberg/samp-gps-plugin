@@ -48,8 +48,13 @@ namespace Pathfinder {
 
     bool AddNode(int id, float x, float y, float z);
     bool AddConnection(int startid, int targetid);
+
     Node* GetNodeByID(int id);
-    int FindPathFromNodeToNode(Node* start, Node* target);
-    void FindPathFromNodeToNodeThreaded(AMX* amx, Node* start, Node* target, std::string callback, int id);
+    float GetNodeDistanceFromPoint(Node* node, float x, float y, float z);
+    float GetDistanceBetweenNodes(Node* first, Node* second);
+
+    int FindPath(Node* start, Node* target);
+    void FindPathThreaded(AMX* amx, Node* start, Node* target, std::string callback, int id);
+
     Path* GetPathByID(int id);
 };

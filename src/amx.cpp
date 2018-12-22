@@ -23,7 +23,7 @@ namespace amx {
 		int error = 0, amx_idx = 0;
 		cell amx_ret;
 
-		for (Callback callback : info->callback_queue) {
+		for (Callback const& callback : info->callback_queue) {
 			error = amx_FindPublic(amx, callback.function.c_str(), &amx_idx);
 
 			if (error != AMX_ERR_NONE) {

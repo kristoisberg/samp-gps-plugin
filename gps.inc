@@ -12,11 +12,12 @@
 #define INVALID_PATH_ID     Path:-1
 
 
-/*enum _:GPS_ERROR {
+enum _:GPS_ERROR {
     GPS_ERROR_NONE              =  0,
     GPS_ERROR_INVALID_PARAMS    = -1,
     GPS_ERROR_INVALID_PATH      = -2,
-    GPS_ERROR_INVALID_NODE      = -3
+    GPS_ERROR_INVALID_NODE      = -3,
+    GPS_ERROR_INTERNAL          = -4
 }
 
 
@@ -26,21 +27,32 @@ native GetDistanceBetweenMapNodes(MapNode:first, MapNode:second, &Float:distance
 native GetMapNodeDistanceFromPoint(MapNode:nodeid, Float:x, Float:y, Float:z, &Float:distance);
 native GetClosestMapNodeToPoint(Float:x, Float:y, Float:z, &MapNode:nodeid, MapNode:ignorednode = INVALID_MAP_NODE_ID);
 
+
 native FindPath(MapNode:start, MapNode:target, &Path:pathid);
 native FindPathThreaded(MapNode:start, MapNode:target, const callback[], id = 0);
+
 
 native bool:IsValidPath(Path:pathid);
 native GetPathSize(Path:pathid, &size);
 native GetPathLength(Path:pathid, &Float:length);
 native GetPathNode(Path:pathid, index, &MapNode:nodeid);
-native DestroyPath(Path:pathid);*/
+native DestroyPath(Path:pathid);
 
 
-native bool:IsValidNode(MapNode:nodeid);
-native GetNodePos(MapNode:nodeid, &Float:x, &Float:y, &Float:z);
-native Path:FindPathFromNodeToNode(MapNode:start, MapNode:target);
-native FindPathFromNodeToNodeThreaded(MapNode:start, MapNode:target, const callback[], id = 0);
-native bool:IsValidPath(Path:pathid);
-native GetPathSize(Path:pathid);
-native Float:GetPathLength(Path:pathid);
-native MapNode:GetPathNode(Path:pathid, index);
+#if defined _PawnPlus_included
+    stock Task:FindPathAsync(MapNode:start, MapNode:target) {
+        new Task:task = task_new();
+
+        if (FindPathThreaded(start, target, "FindPathAsyncResponse", _:task) != GPS_ERROR_NONE) {
+            task_set_error_ticks(task, amx_err_exit, 0);
+        }
+
+        return task;
+    }
+
+
+    forward public FindPathAsyncResponse(Path:path, Task:task);
+    public FindPathAsyncResponse(Path:path, Task:task) {
+        task_set_result(task, _:path);
+    }
+#endif
