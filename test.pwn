@@ -4,7 +4,7 @@
 #include "gps.inc"
 
 
-#define THREADING_TEST_COUNT 1000
+#define THREADING_TEST_COUNT 100
 
 new ThreadingTestCount;
 
@@ -15,7 +15,7 @@ main() {
     Test(MapNode:1,  MapNode:27751);*/
 
     for (new i; i < THREADING_TEST_COUNT; i++) {
-        FindPathThreaded(MapNode:1, MapNode:1, "ThreadingTestResponse");
+        FindPathThreaded(MapNode:1, MapNode:27751, "ThreadingTestResponse");
     }
 }
 

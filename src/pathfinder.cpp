@@ -161,7 +161,9 @@ namespace Pathfinder {
         int id = path_count++;
         paths[id] = *path;
 
+        amx_list_lock.lock();
         amx_list[amx].callback_queue.push_back({id, callback, extra_id});
+        amx_list_lock.unlock();
     }
 
 

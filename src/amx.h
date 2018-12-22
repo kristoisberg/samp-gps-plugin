@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <mutex>
 
 #include "../lib/sdk/amx/amx2.h"
 
@@ -14,6 +15,7 @@ struct AMXInfo {
 };
 
 extern std::unordered_map<AMX*, AMXInfo> amx_list;
+extern std::mutex amx_list_lock;
 
 
 namespace amx {
