@@ -1,17 +1,19 @@
 #include <cmath>
-#include <map>
+#include <set>
 #include <queue>
 #include <iostream>
-#include <functional>
 
 #include "pathfinder.h"
 #include "amx.h"
 
 
 namespace Pathfinder {
-    std::map<int, Node> nodes;
+    float infinity = std::numeric_limits<float>::infinity();
 
-    std::map<int, Pathfinder::Path> paths;
+    std::unordered_map<int, Node> nodes;
+    int largest_node_id = -1;
+
+    std::unordered_map<int, Pathfinder::Path> paths;
     int path_count = 0;
 
 
@@ -21,6 +23,11 @@ namespace Pathfinder {
         }
 
         nodes.insert({id, Node{x, y, z, id}});
+
+        if (id > largest_node_id) {
+            largest_node_id = id;
+        }
+
         return true;
     } 
 
@@ -71,38 +78,40 @@ namespace Pathfinder {
         }
 
         std::priority_queue<ShortestPathTo*> queue;
-        std::map<Node*, ShortestPathTo*> existing_paths;
+        std::vector<ShortestPathTo> existing_paths(largest_node_id + 1);
         ShortestPathTo* path = nullptr;
         ShortestPathTo* next_path = nullptr;
         ShortestPathTo* solution = nullptr;
         float distance = 0.0f;
 
-        queue.push(new ShortestPathTo{start, nullptr, 0.0f});
+        path = &existing_paths.at(start->id);
+        path->distance = 0.0f;
+        path->previous = nullptr;
+        path->node = start;
+        
+        queue.push(path);
 
         while (!queue.empty()) {
             path = queue.top();
             queue.pop();
 
             for (Connection const& connection : path->node->connections) {
-                auto it = existing_paths.find(connection.target);
+                next_path = &existing_paths.at(connection.target->id);
                 distance = path->distance + connection.distance;
 
-                if (it == existing_paths.end()) {
-                    next_path = new ShortestPathTo{connection.target, path, distance};
-                    queue.push(next_path);
-                    existing_paths[connection.target] = next_path;
+                if (next_path->distance > distance) {
+                    if (next_path->distance == infinity) {
+                        next_path->node = connection.target;
 
-                    if (connection.target == target) {
-                        solution = next_path;
+                        if (connection.target == target) {
+                            solution = next_path;
+                        }
                     }
-                } else {
-                    next_path = it->second;
-                    
-                    if (next_path->distance > distance) {
-                        next_path->distance = distance;
-                        next_path->previous = path;
-                        queue.push(next_path);
-                    }
+
+                    next_path->distance = distance;
+                    next_path->previous = path;
+
+                    queue.push(next_path);
                 }
             }
         }

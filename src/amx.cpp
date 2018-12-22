@@ -4,7 +4,7 @@
 #include "amx.h"
 
 
-std::map<AMX*, AMXInfo> amx_list;
+std::unordered_map<AMX*, AMXInfo> amx_list;
 
 
 namespace amx {
@@ -19,11 +19,11 @@ namespace amx {
 
 
 	void processTick(AMX *amx) {
-		AMXInfo info = amx_list[amx];
+		AMXInfo* info = &amx_list[amx];
 		int error = 0, amx_idx = 0;
-		cell amx_addr, amx_ret;
+		cell amx_ret;
 
-		for (Callback const& callback : info.callback_queue) {
+		for (Callback callback : info->callback_queue) {
 			error = amx_FindPublic(amx, callback.function.c_str(), &amx_idx);
 
 			if (error != AMX_ERR_NONE) {
@@ -34,9 +34,8 @@ namespace amx {
 			amx_Push(amx, callback.id);
 			amx_Push(amx, callback.path);
 			amx_Exec(amx, &amx_ret, amx_idx);
-			amx_Release(amx, amx_addr);
 		}
 
-		info.callback_queue.clear();
+		info->callback_queue.clear();
 	}
 }

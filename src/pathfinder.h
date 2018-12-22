@@ -1,13 +1,15 @@
 #pragma once
 
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <limits>
 
 #include "../lib/sdk/amx/amx2.h"
 
 
 namespace Pathfinder {
+    extern float infinity;
+    
     struct Connection; 
 
     struct Node {
@@ -24,7 +26,7 @@ namespace Pathfinder {
     struct ShortestPathTo {
         Node* node;
         ShortestPathTo* previous;
-        float distance = std::numeric_limits<float>::infinity();
+        float distance = infinity;
 
         friend bool operator<(const ShortestPathTo& lhs, const ShortestPathTo& rhs) {
             return lhs.distance < rhs.distance;
@@ -37,9 +39,9 @@ namespace Pathfinder {
     };
 
 
-    extern std::map<int, Node> nodes;
+    extern std::unordered_map<int, Node> nodes;
 
-    extern std::map<int, Pathfinder::Path> paths;
+    extern std::unordered_map<int, Pathfinder::Path> paths;
     extern int path_count;
 
 

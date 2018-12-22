@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 
 #include "../lib/sdk/amx/amx2.h"
 
@@ -13,7 +13,7 @@ struct AMXInfo {
 	std::vector<Callback> callback_queue;
 };
 
-extern std::map<AMX*, AMXInfo> amx_list;
+extern std::unordered_map<AMX*, AMXInfo> amx_list;
 
 
 namespace amx {

@@ -49,6 +49,13 @@
         "unordered_map": "cpp",
         "xhash": "cpp",
         "bitset": "cpp",
-        "cstdarg": "cpp"
+        "cstdarg": "cpp",
+        "chrono": "cpp",
+        "ratio": "cpp",
+        "set": "cpp",
+        "xthread": "cpp",
+        "thread": "cpp",
+        "iterator": "cpp",
+        "sstream": "cpp"
     }
 }
