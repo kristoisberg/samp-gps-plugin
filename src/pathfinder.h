@@ -9,7 +9,7 @@
 
 namespace Pathfinder {
     extern float infinity;
-    
+
     struct Connection; 
 
     struct Node {
@@ -27,9 +27,10 @@ namespace Pathfinder {
         Node* node;
         ShortestPathTo* previous;
         float distance = infinity;
+        float target_distance = infinity;
 
         friend bool operator<(const ShortestPathTo& lhs, const ShortestPathTo& rhs) {
-            return lhs.distance < rhs.distance;
+            return lhs.distance + lhs.target_distance < rhs.distance + rhs.target_distance;
         };
     };
 

@@ -32,6 +32,16 @@ namespace Pathfinder {
     } 
 
 
+    float GetNodeDistanceFromPoint(Node* node, float x, float y, float z) {
+        return sqrt(pow(node->x - x, 2.0f) + pow(node->y - y, 2.0f) + pow(node->z - z, 2.0f));
+    }
+
+
+    float GetDistanceBetweenNodes(Node* first, Node* second) {
+        return GetNodeDistanceFromPoint(first, second->x, second->y, second->z);
+    }
+
+
     bool AddConnection(int startid, int targetid) {
         Node* start = GetNodeByID(startid);
 
@@ -45,7 +55,7 @@ namespace Pathfinder {
             return false;
         }
 
-        start->connections.push_back(Connection{target, sqrt(pow(start->x - target->x, 2.0f) + pow(start->y - target->y, 2.0f) + pow(start->z - target->z, 2.0f))});
+        start->connections.push_back(Connection{target, GetDistanceBetweenNodes(start, target)});
         return true;
     }
 
@@ -86,6 +96,7 @@ namespace Pathfinder {
 
         path = &existing_paths.at(start->id);
         path->distance = 0.0f;
+        path->target_distance = GetDistanceBetweenNodes(start, target);
         path->previous = nullptr;
         path->node = start;
         
@@ -95,6 +106,10 @@ namespace Pathfinder {
             path = queue.top();
             queue.pop();
 
+            if (solution != nullptr && solution < path) {
+                continue;
+            }
+
             for (Connection const& connection : path->node->connections) {
                 next_path = &existing_paths.at(connection.target->id);
                 distance = path->distance + connection.distance;
@@ -102,6 +117,7 @@ namespace Pathfinder {
                 if (next_path->distance > distance) {
                     if (next_path->distance == infinity) {
                         next_path->node = connection.target;
+                        next_path->target_distance = GetDistanceBetweenNodes(connection.target, target);
 
                         if (connection.target == target) {
                             solution = next_path;
