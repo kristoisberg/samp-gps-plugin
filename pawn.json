@@ -24,6 +24,22 @@
 			"name": "gps.so",
 			"platform": "linux",
 			"archive": false
+		},
+		{
+			"name": "nodes.zip",
+			"platform": "windows",
+			"archive": true,
+			"files": {
+				"GPS.dat": "scriptfiles/GPS.dat"
+			}
+		},
+		{
+			"name": "nodes.zip",
+			"platform": "linux",
+			"archive": true,
+			"files": {
+				"GPS.dat": "scriptfiles/GPS.dat"
+			}
 		}
 	]
 }
