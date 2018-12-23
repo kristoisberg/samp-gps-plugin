@@ -34,8 +34,8 @@ Callback::Callback(AMX* amx, std::string function, const char* format, cell* par
 }
 
 
-void Callback::setResult(int result) { 
-    this->result = result;
+void Callback::setResult(int value) { 
+    this->result = value;
 }
 
 

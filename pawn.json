@@ -4,17 +4,26 @@
 	"entry": "test.pwn",
 	"output": "test.amx",
 	"dependencies": [
-		"sampctl/samp-stdlib",
+		"sampctl/samp-stdlib"
+	],
+	"dev_dependencies": [
 		"IllidanS4/PawnPlus"
 	],
 	"runtime": {
-		"version": "0.3.7",
-		"mode": "y_testing",
-		"echo": "Loading configuration...",
-		"rcon_password": "password",
-		"port": 8192,
-		"hostname": "SA-MP Server",
-		"maxplayers": 50,
-		"language": ""
-	}
+		"plugins": [
+			"kristoisberg/samp-gps-plugin"
+		]
+	},
+	"resources": [
+		{
+			"name": "gps.dll",
+			"platform": "windows",
+			"archive": false
+		},
+		{
+			"name": "gps.so",
+			"platform": "linux",
+			"archive": false
+		}
+	]
 }

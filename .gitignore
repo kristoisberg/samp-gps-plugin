@@ -48,3 +48,14 @@ samp.ban
 #
 
 *.sublime-workspace
+*.sublime-project
+
+Debug/
+Release/
+build/
+.vs/
+*.so
+*.o
+*.dll
+
+release-*/

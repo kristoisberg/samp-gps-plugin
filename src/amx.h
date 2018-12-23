@@ -5,8 +5,6 @@
 #include <unordered_map>
 #include <mutex>
 
-#include "../lib/sdk/amx/amx2.h"
-
 #include "common.h"
 #include "callback.h"
 

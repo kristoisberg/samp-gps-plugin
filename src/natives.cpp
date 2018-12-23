@@ -106,7 +106,7 @@ namespace Natives {
             }
         }
 
-        Pathfinder::Node* result;
+        Pathfinder::Node* result = nullptr;
         float distance = std::numeric_limits<float>::infinity(), temp = 0.0f;
 
         for (std::pair<int, Pathfinder::Node> node : Pathfinder::nodes) {
@@ -236,8 +236,6 @@ namespace Natives {
             return GPS_ERROR_INVALID_PATH;
         }
 
-        float result = path->length;
-
         cell* addr = NULL;
         amx_GetAddr(amx, params[2], &addr);
         *addr = amx_ftoc(path->length);
@@ -256,7 +254,7 @@ namespace Natives {
             return GPS_ERROR_INVALID_PATH;
         }
 
-        int index = static_cast<int>(params[2]);
+        unsigned int index = static_cast<unsigned int>(params[2]);
 
         if (index < 0 || index >= path->nodes.size()) {
             return GPS_ERROR_INVALID_NODE;

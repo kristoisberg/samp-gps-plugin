@@ -4,9 +4,8 @@
 #include <unordered_map>
 #include <limits>
 
+#include "common.h"
 #include "callback.h"
-
-#include "../lib/sdk/amx/amx2.h"
 
 
 namespace Pathfinder {

@@ -4,7 +4,7 @@
 #include <deque>
 #include <variant>
 
-#include "../lib/sdk/amx/amx2.h"
+#include "common.h"
 
 
 class Callback {

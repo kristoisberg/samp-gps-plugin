@@ -2,9 +2,6 @@
 #include <string>
 #include <iostream>
 
-#include "../lib/sdk/amx/amx2.h"
-#include "../lib/sdk/plugincommon.h"
-
 #include "common.h"
 #include "pathfinder.h"
 #include "natives.h"
@@ -34,11 +31,11 @@ PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData) {
 
 		while (!file.eof()) {
 			std::getline(file, buffer);
-			sscanf(buffer.c_str(), "%i", &type);
+			sscanf_s(buffer.c_str(), "%i", &type);
 
 			switch (type) {
 				case 0: {
-					sscanf(buffer.c_str(), "%*i %f %f %f %*i %i", &x, &y, &z, &id);
+					sscanf_s(buffer.c_str(), "%*i %f %f %f %*i %i", &x, &y, &z, &id);
 
 					if (Pathfinder::AddNode(id, x, y, z)) {
 						node_count++;
@@ -48,7 +45,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData) {
 				}
 
 				case 1: {
-					sscanf(buffer.c_str(), "%*i %i %i %i", &id, &id2, &direction);
+					sscanf_s(buffer.c_str(), "%*i %i %i %i", &id, &id2, &direction);
 
 					if (direction != 2 && Pathfinder::AddConnection(id, id2)) {
 						connection_count++;

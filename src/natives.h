@@ -2,9 +2,6 @@
 
 #include <iostream>
 
-#include "../lib/sdk/amx/amx2.h"
-
-#include "common.h"
 #include "pathfinder.h"
 
 
