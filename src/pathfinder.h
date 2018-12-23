@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <limits>
 
+#include "callback.h"
+
 #include "../lib/sdk/amx/amx2.h"
 
 
@@ -54,7 +56,7 @@ namespace Pathfinder {
     float GetDistanceBetweenNodes(Node* first, Node* second);
 
     int FindPath(Node* start, Node* target);
-    void FindPathThreaded(AMX* amx, Node* start, Node* target, std::string callback, int id);
+    void FindPathThreaded(Node* start, Node* target, Callback* callback);
 
     Path* GetPathByID(int id);
 };

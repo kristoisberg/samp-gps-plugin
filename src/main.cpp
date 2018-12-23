@@ -96,14 +96,14 @@ AMX_NATIVE_INFO PluginNatives[] = {
 
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx) {
-	amx::load(amx);
+	amx::Load(amx);
 
 	return amx_Register(amx, PluginNatives, -1);
 }
 
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxUnload(AMX* amx) {
-    amx::unload(amx);
+    amx::Unload(amx);
 
     return 1;
 }
@@ -111,6 +111,6 @@ PLUGIN_EXPORT int PLUGIN_CALL AmxUnload(AMX* amx) {
 
 PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
     for (std::pair<AMX*, AMXInfo> i : amx_list) {
-        amx::processTick(i.first);
+        amx::ProcessTick(i.first);
     }
 }

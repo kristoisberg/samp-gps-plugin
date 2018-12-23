@@ -1,7 +1,7 @@
 GPP = g++
 GCC = gcc
 OUTPUT = "./../samp2/plugins/gps.so"
-CC_PARAMS =-std=c++14 -g -c -m32 -fPIC -O0 -w -DLINUX -I./lib/sdk/amx/
+CC_PARAMS =-std=c++17 -g -c -m32 -fPIC -O0 -w -DLINUX -I./lib/sdk/amx/
 
 all:
 	$(GPP) $(CC_PARAMS) ./lib/sdk/amxplugin.cpp

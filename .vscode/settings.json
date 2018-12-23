@@ -56,6 +56,19 @@
         "xthread": "cpp",
         "thread": "cpp",
         "iterator": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "array": "cpp",
+        "cctype": "cpp",
+        "condition_variable": "cpp",
+        "ctime": "cpp",
+        "forward_list": "cpp",
+        "iomanip": "cpp",
+        "mutex": "cpp",
+        "stack": "cpp",
+        "typeindex": "cpp",
+        "unordered_set": "cpp",
+        "xlocmon": "cpp",
+        "xloctime": "cpp",
+        "variant": "cpp"
     }
 }

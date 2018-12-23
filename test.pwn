@@ -10,13 +10,15 @@ new ThreadingTestCount;
 
 
 main() {
-    /*Test(MapNode:1,  MapNode:2);
+    Test(MapNode:1,  MapNode:2);
     Test(MapNode:82, MapNode:90);
-    Test(MapNode:1,  MapNode:27751);*/
+    Test(MapNode:1,  MapNode:27751);
 
     for (new i; i < THREADING_TEST_COUNT; i++) {
         FindPathThreaded(MapNode:1, MapNode:27751, "ThreadingTestResponse");
     }
+
+    FindPathThreaded(MapNode:82, MapNode:90, "TestResponse2", "ifis", 1337, 3.14, true, "i'm a string");
 }
 
 forward public ThreadingTestResponse(Path:path);
@@ -26,7 +28,7 @@ public ThreadingTestResponse(Path:path) {
 }
 
 
-/*Test(MapNode:start, MapNode:target) {
+Test(MapNode:start, MapNode:target) {
     new Float:x, Float:y, Float:z;
 
     GetMapNodePos(start, x, y, z);
@@ -41,7 +43,7 @@ public ThreadingTestResponse(Path:path) {
     printf("NON-THREADED: %ims", GetTickCount() - tick);
     Test2(path);
 
-    FindPathThreaded(start, target, "TestResponse", GetTickCount());
+    FindPathThreaded(start, target, "TestResponse", "i", GetTickCount());
 
     tick = GetTickCount();
     path = Path:task_await(FindPathAsync(start, target));
@@ -73,4 +75,10 @@ forward public TestResponse(Path:path, tick);
 public TestResponse(Path:path, tick) {
     printf("THREADED: %ims", GetTickCount() - tick);
     Test2(path);
-}*/
+}
+
+
+forward public TestResponse2(Path:path, integer, Float:float, bool:boolean, const string[]);
+public TestResponse2(Path:path, integer, Float:float, bool:boolean, const string[]) {
+    printf("%i %i %f %i %s", _:path, integer, float, boolean, string);
+}

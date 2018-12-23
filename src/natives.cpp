@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "natives.h"
+#include "callback.h"
 
 
 namespace Natives {
@@ -160,7 +161,10 @@ namespace Natives {
 
 
     cell AMX_NATIVE_CALL FindPathThreaded(AMX* amx, cell* params) {
-        CHECK_PARAMS(4);
+        if (params[0] < (3 * 4)) { 
+            std::cout << "FindPathThreaded: Expecting at least 3 parameter(s), but found " << (params[0] / sizeof(cell)) << ".\n"; 
+            return GPS_ERROR_INVALID_PARAMS; 
+        }
 
         int start_id = static_cast<int>(params[1]);
         Pathfinder::Node* start = Pathfinder::GetNodeByID(start_id);
@@ -176,11 +180,15 @@ namespace Natives {
             return GPS_ERROR_INVALID_NODE;
         }
 
-        std::string callback = amx_GetCppString(amx, params[3]);
-        int id = static_cast<int>(params[4]);
+        std::string callback_name = amx_GetCppString(amx, params[3]);
 
-        try {
-            std::thread t(Pathfinder::FindPathThreaded, amx, start, target, callback, id);
+        char* format = NULL;
+        amx_StrParam(amx, params[4], format);
+
+        Callback* callback = new Callback(amx, callback_name, format, params, 4);
+
+        try { 
+            std::thread t(Pathfinder::FindPathThreaded, start, target, callback);
             t.detach();
         } catch (std::exception e) {
             std::cout << "Failed to dispatch thread: " << e.what() << "\n";

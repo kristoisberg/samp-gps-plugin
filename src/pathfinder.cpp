@@ -151,7 +151,7 @@ namespace Pathfinder {
     }
 
 
-    void FindPathThreaded(AMX* amx, Node* start, Node* target, std::string callback, int extra_id) {
+    void FindPathThreaded(Node* start, Node* target, Callback* callback) {
         Path* path = FindPathInternal(start, target);
 
         if (path == nullptr) {
@@ -161,9 +161,8 @@ namespace Pathfinder {
         int id = path_count++;
         paths[id] = *path;
 
-        amx_list_lock.lock();
-        amx_list[amx].callback_queue.push_back({id, callback, extra_id});
-        amx_list_lock.unlock();
+        callback->setResult(id);
+        amx::QueueCallback(callback->getAMX(), callback);
     }
 
 

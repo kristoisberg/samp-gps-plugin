@@ -29,7 +29,7 @@ native GetClosestMapNodeToPoint(Float:x, Float:y, Float:z, &MapNode:nodeid, MapN
 
 
 native FindPath(MapNode:start, MapNode:target, &Path:pathid);
-native FindPathThreaded(MapNode:start, MapNode:target, const callback[], id = 0);
+native FindPathThreaded(MapNode:start, MapNode:target, const callback[], const format[] = "", {Float, _}:...);
 
 
 native bool:IsValidPath(Path:pathid);
@@ -43,7 +43,7 @@ native DestroyPath(Path:pathid);
     stock Task:FindPathAsync(MapNode:start, MapNode:target) {
         new Task:task = task_new();
 
-        if (FindPathThreaded(start, target, "FindPathAsyncResponse", _:task) != GPS_ERROR_NONE) {
+        if (FindPathThreaded(start, target, "FindPathAsyncResponse", "i", _:task) != GPS_ERROR_NONE) {
             task_set_error_ticks(task, amx_err_exit, 0);
         }
 

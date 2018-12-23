@@ -7,10 +7,3 @@ extern void *pAMXFunctions;
 
 
 struct Path;
-
-
-struct Callback {
-    int path;
-    std::string function;
-    int id;
-};

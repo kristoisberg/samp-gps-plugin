@@ -9,37 +9,33 @@ std::mutex amx_list_lock;
 
 
 namespace amx {
-	void load(AMX *amx) {
+	void Load(AMX* amx) {
 		amx_list[amx] = AMXInfo();
 	}
 
 
-	void unload(AMX *amx) {
+	void Unload(AMX* amx) {
 		amx_list.erase(amx);
 	}
 
 
-	void processTick(AMX *amx) {
+	void ProcessTick(AMX* amx) {
 		if (amx_list_lock.try_lock()) {
 			AMXInfo* info = &amx_list[amx];
-			int error = 0, amx_idx = 0;
-			cell amx_ret;
 
-			for (Callback const& callback : info->callback_queue) {
-				error = amx_FindPublic(amx, callback.function.c_str(), &amx_idx);
-
-				if (error != AMX_ERR_NONE) {
-					std::cout << "Failed to locate public function \"" << callback.function.c_str() << "\" in AMX, error: " << error << "\n";
-					continue;
-				}
-
-				amx_Push(amx, callback.id);
-				amx_Push(amx, callback.path);
-				amx_Exec(amx, &amx_ret, amx_idx);
+			for (Callback* callback : info->callback_queue) {
+				callback->call();
 			}
 
 			info->callback_queue.clear();
 			amx_list_lock.unlock();
 		}
+	}
+
+
+	void QueueCallback(AMX* amx, Callback* callback) {
+		amx_list_lock.lock();
+        amx_list[amx].callback_queue.push_back(callback);
+        amx_list_lock.unlock();
 	}
 }
