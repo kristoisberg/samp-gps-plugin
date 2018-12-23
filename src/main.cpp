@@ -31,11 +31,20 @@ PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData) {
 
 		while (!file.eof()) {
 			std::getline(file, buffer);
-			sscanf_s(buffer.c_str(), "%i", &type);
+
+			#ifdef WIN32
+				sscanf_s(buffer.c_str(), "%i", &type);
+			#else
+				sscanf(buffer.c_str(), "%i", &type);
+			#endif
 
 			switch (type) {
 				case 0: {
-					sscanf_s(buffer.c_str(), "%*i %f %f %f %*i %i", &x, &y, &z, &id);
+					#ifdef WIN32
+						sscanf_s(buffer.c_str(), "%*i %f %f %f %*i %i", &x, &y, &z, &id);
+					#else
+						sscanf(buffer.c_str(), "%*i %f %f %f %*i %i", &x, &y, &z, &id);
+					#endif
 
 					if (Pathfinder::AddNode(id, x, y, z)) {
 						node_count++;
@@ -45,7 +54,11 @@ PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData) {
 				}
 
 				case 1: {
-					sscanf_s(buffer.c_str(), "%*i %i %i %i", &id, &id2, &direction);
+					#ifdef WIN32
+						sscanf_s(buffer.c_str(), "%*i %i %i %i", &id, &id2, &direction);
+					#else
+						sscanf(buffer.c_str(), "%*i %i %i %i", &id, &id2, &direction);
+					#endif
 
 					if (direction != 2 && Pathfinder::AddConnection(id, id2)) {
 						connection_count++;
