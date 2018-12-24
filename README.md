@@ -39,42 +39,55 @@ Include in your code and begin using the library:
 ### Functions
 
 `bool:IsValidMapNode(MapNode:nodeid)`
+
 * Returns if the map node with the specified ID is valid.
 
 `GetMapNodePos(MapNode:nodeid, &Float:x, &Float:y, &Float:z)`
+
 * If the specified map node is valid, returns `GPS_ERROR_NONE` and passes the position of it to `x`, `y` and `z`, otherwise returns `GPS_ERROR_INVALID_NODE`.
 
 `GetDistanceBetweenMapNodes(MapNode:first, MapNode:second, &Float:distance)`
+
 * If both of the specified map nodes are valid, returns `GPS_ERROR_NONE` and passes the distance between them to `distance`, otherwise returns `GPS_ERROR_INVALID_NODE`.
 
 `GetMapNodeDistanceFromPoint(MapNode:nodeid, Float:x, Float:y, Float:z, &Float:distance)`
+
 * If the specified map node is valid, returns `GPS_ERROR_NONE` and passes the distance of the map node from the specified position to `distance`, otherwise returns `GPS_ERROR_INVALID_NODE`.
 
 `GetClosestMapNodeToPoint(Float:x, Float:y, Float:z, &MapNode:nodeid, MapNode:ignorednode = INVALID_MAP_NODE_ID)`
+
 * Passes the closest map node to the specified position to `nodeid`. If `ignorednode` is specified and it is the closest node to the position, it is ignored and the next closest node is returned instead.
 
 `FindPath(MapNode:start, MapNode:target, &Path:pathid)`
+
 * If both of the specified map nodes are valid, returns `GPS_ERROR_NONE` and tries to find a path from `start` to `target` and pass its ID to `pathid`, otherwise returns `GPS_ERROR_INVALID_NODE`. If pathfinding fails, returns `GPS_ERROR_INVALID_PATH`.
 
 `FindPathThreaded(MapNode:start, MapNode:target, const callback[], const format[] = "", {Float, _}:...)`
+
 * If both of the specified map nodes are valid, returns `GPS_ERROR_NONE` and tries to find a path from `start` to `target`. After pathfinding is finished, calls the specified callback and passes the path ID (could be `INVALID_PATH_ID` if pathfinding fails) and the specified arguments to it.
 
 `Task:FindPathAsync(MapNode:start, MapNode:target)`
+
 * Pauses the current function and continues it after it is finished. Throws an AMX error if pathfinding fails for any reason. Only available if PawnPlus is included before GPS. Usage explained below.
 
 `bool:IsValidPath(Path:pathid)`
+
 * Returns if the path with the specified ID is valid.
 
 `GetPathSize(Path:pathid, &size)`
+
 * If the specified path is valid, returns `GPS_ERROR_NONE` and passes the amount of nodes in it to `size`, otherwise returns `GPS_ERROR_INVALID_PATH`.
 
 `GetPathNode(Path:pathid, index, &MapNode:nodeid)`
+
 * If the specified path is valid and the index contains a node, returns `GPS_ERROR_NONE` and passes the ID of the node at that index to `nodeid`, otherwise returns `GPS_ERROR_INVALID_PATH` or `GPS_ERROR_INVALID_NODE` depending on the error.
 
 `GetPathLength(Path:pathid, &Float:length)`
+
 * If the specified path is valid, returns `GPS_ERROR_NONE` and passes the length of the path in metres to `length`, otherwise returns `GPS_ERROR_INVALID_PATH`.
 
 `DestroyPath(Path:pathid)`
+
 * If the specified path is valid, returns `GPS_ERROR_NONE` and destroys the path, otherwise returns `GPS_ERROR_INVALID_PATH`.
 
 
