@@ -106,7 +106,7 @@ CMD:pathtols(playerid) {
     new MapNode:target;
 
     if (!GetClosestMapNodeToPoint(1258.7352, -2036.7100, 59.4561, target)) { // this is also valid since the value of GPS_ERROR_NODE is 0.
-        return SendClientMessage(playerid, COLOR_RED, "Finding a node near LSPD, GPS.dat was not loaded.");
+        return SendClientMessage(playerid, COLOR_RED, "Finding a node near LSPD failed, GPS.dat was not loaded.");
     }
 
     if (!FindPathThreaded(start, target, "OnPathToLSFound", "ii", playerid, GetTickCount())) {
@@ -160,7 +160,7 @@ CMD:pathtols(playerid) {
     new MapNode:target;
 
     if (!GetClosestMapNodeToPoint(1258.7352, -2036.7100, 59.4561, target)) { 
-        return SendClientMessage(playerid, COLOR_RED, "Finding a node near LSPD, GPS.dat was not loaded.");
+        return SendClientMessage(playerid, COLOR_RED, "Finding a node near LSPD failed, GPS.dat was not loaded.");
     }
 
     SendClientMessage(playerid, COLOR_WHITE, "Finding the path...");
