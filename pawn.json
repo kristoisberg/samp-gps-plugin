@@ -16,28 +16,28 @@
 	},
 	"resources": [
 		{
-			"name": "gps-windows.zip",
+			"name": "GPS-windows.zip",
 			"platform": "windows",
 			"archive": true,
 			"includes": [
-				"gps.inc"
+				"GPS.inc"
 			],
 			"plugins": [
-				"gps.dll"
+				"GPS.dll"
 			],
 			"files": {
 				"GPS.dat": "scriptfiles/GPS.dat"
 			}
 		},
 		{
-			"name": "gps-linux.zip",
+			"name": "GPS-linux.zip",
 			"platform": "linux",
 			"archive": true,
 			"includes": [
-				"gps.inc"
+				"GPS.inc"
 			],
 			"plugins": [
-				"gps.so"
+				"GPS.so"
 			],
 			"files": {
 				"GPS.dat": "scriptfiles/GPS.dat"

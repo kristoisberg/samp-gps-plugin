@@ -53,6 +53,7 @@ samp.ban
 Debug/
 Release/
 build/
+x64/
 .vs/
 *.so
 *.o

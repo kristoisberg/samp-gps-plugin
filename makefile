@@ -1,6 +1,6 @@
 GPP = g++
 GCC = gcc
-OUTPUT = "./build/gps.so"
+OUTPUT = "./build/GPS.so"
 CC_PARAMS =-std=c++17 -c -m32 -fPIC -O3 -w -DLINUX -I./lib/sdk/amx/
 
 all:

@@ -1,7 +1,7 @@
 #include <a_samp>
 #include <PawnPlus>
 
-#include "gps.inc"
+#include "GPS.inc"
 
 
 #define THREADING_TEST_COUNT 100

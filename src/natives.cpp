@@ -152,9 +152,15 @@ namespace Natives {
             return GPS_ERROR_INVALID_NODE;
         }
 
+        int result = Pathfinder::FindPath(start, target);
+
+        if (result == -1) {
+            return GPS_ERROR_INVALID_PATH;
+        }
+
         cell* addr = NULL;
         amx_GetAddr(amx, params[3], &addr);
-        *addr = Pathfinder::FindPath(start, target);
+        *addr = result;
 
         return GPS_ERROR_NONE;
     }
