@@ -30,12 +30,13 @@ main() {
         }
     }
 
-    new connection_count, Float:angle, Float:angle2;
+    new connection_count, Float:angle, Float:angle2, MapNode:random_node;
+    GetRandomMapNode(random_node);
     GetMapNodeConnectionCount(nodeid, connection_count);
-    GetAngleBetweenMapNodes(nodeid, MapNode:25, angle);
+    GetAngleBetweenMapNodes(nodeid, random_node, angle);
     GetMapNodeAngleFromPoint(nodeid, 0.0, 0.0, angle2);
 
-    printf("%i %i %f %f", GetHighestMapNodeID(), connection_count, angle, angle2);
+    printf("%i %i %i %i %f %f", GetHighestMapNodeID(), connection_count, _:random_node, IsValidMapNode(random_node), angle, angle2);
 
     Test(MapNode:1,  MapNode:2);
     Test(MapNode:82, MapNode:90);
