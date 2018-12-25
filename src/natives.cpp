@@ -7,7 +7,7 @@
 
 
 namespace Natives {
-    cell AMX_NATIVE_CALL IsValidNode(AMX* amx, cell* params) {
+    cell AMX_NATIVE_CALL IsValidMapNode(AMX* amx, cell* params) {
         CHECK_PARAMS(1);
 
         int id = static_cast<int>(params[1]);
@@ -16,7 +16,7 @@ namespace Natives {
     }
 
 
-    cell AMX_NATIVE_CALL GetNodePos(AMX* amx, cell* params) {
+    cell AMX_NATIVE_CALL GetMapNodePos(AMX* amx, cell* params) {
         CHECK_PARAMS(4);
 
         int id = static_cast<int>(params[1]);
@@ -41,7 +41,7 @@ namespace Natives {
     }
 
     
-    cell AMX_NATIVE_CALL GetDistanceBetweenNodes(AMX* amx, cell* params) {
+    cell AMX_NATIVE_CALL GetDistanceBetweenMapNodes(AMX* amx, cell* params) {
         CHECK_PARAMS(3);
 
         int first_id = static_cast<int>(params[1]);
@@ -68,8 +68,8 @@ namespace Natives {
     }
 
 
-    cell AMX_NATIVE_CALL GetNodeDistanceFromPoint(AMX* amx, cell* params) {
-        CHECK_PARAMS(4);
+    cell AMX_NATIVE_CALL GetMapNodeDistanceFromPoint(AMX* amx, cell* params) {
+        CHECK_PARAMS(5);
 
         int id = static_cast<int>(params[1]);
         Pathfinder::Node* node = Pathfinder::GetNodeByID(id);
@@ -90,7 +90,7 @@ namespace Natives {
     }
 
 
-    cell AMX_NATIVE_CALL GetClosestNodeToPoint(AMX* amx, cell* params) {
+    cell AMX_NATIVE_CALL GetClosestMapNodeToPoint(AMX* amx, cell* params) {
         CHECK_PARAMS(5);
 
         float x = amx_ctof(params[1]), y = amx_ctof(params[2]), z = amx_ctof(params[3]);
