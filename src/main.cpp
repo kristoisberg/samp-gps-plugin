@@ -86,11 +86,16 @@ PLUGIN_EXPORT void PLUGIN_CALL Unload() {
 
 
 AMX_NATIVE_INFO PluginNatives[] = {
-	{"IsValidMapNode", 				Natives::IsValidNode},
-	{"GetMapNodePos",				Natives::GetNodePos},
-	{"GetDistanceBetweenMapNodes",	Natives::GetDistanceBetweenNodes},
-	{"GetMapNodeDistanceFromPoint",	Natives::GetNodeDistanceFromPoint},
-	{"GetClosestMapNodeToPoint",	Natives::GetClosestNodeToPoint},
+	{"IsValidMapNode", 				Natives::IsValidMapNode},
+	{"GetMapNodePos",				Natives::GetMapNodePos},
+	{"GetDistanceBetweenMapNodes",	Natives::GetDistanceBetweenMapNodes},
+	//{"GetAngleBetweenMapNodes",		Natives::GetAngleBetweenMapNodes},
+	{"GetMapNodeDistanceFromPoint",	Natives::GetMapNodeDistanceFromPoint},
+	//{"GetMapNodeAngleFromPoint",	Natives::GetMapNodeAngleFromPoint},
+	{"GetClosestMapNodeToPoint",	Natives::GetClosestMapNodeToPoint},
+	//{"GetMapNodeConnectionCount",	Natives::GetMapNodeConnectionCount},
+	//{"GetHighestMapNodeID",			Natives::GetHighestMapNodeID},
+	//{"GetRandomMapNode",			Natives::GetRandomMapNode},
 
 	{"FindPath",					Natives::FindPath},
 	{"FindPathThreaded",			Natives::FindPathThreaded},
