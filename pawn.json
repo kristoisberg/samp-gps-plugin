@@ -9,11 +9,6 @@
 	"dev_dependencies": [
 		"IllidanS4/PawnPlus"
 	],
-	"runtime": {
-		"plugins": [
-			"kristoisberg/samp-gps-plugin"
-		]
-	},
 	"resources": [
 		{
 			"name": "GPS-windows.zip",

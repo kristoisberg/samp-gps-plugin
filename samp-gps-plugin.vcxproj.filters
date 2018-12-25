@@ -39,6 +39,9 @@
     <ClCompile Include="lib\sdk\amx\getch.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\node.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="gps.inc">
@@ -74,6 +77,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="lib\sdk\amx\sclinux.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\connection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\node.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -10,6 +10,33 @@ new ThreadingTestCount;
 
 
 main() {
+    new MapNode:nodeid, error = GetClosestMapNodeToPoint(-2427.625000, -2474.750000, 35.750000, nodeid);
+    
+    if (error) {
+        printf("GetClosestMapNodeToPoint: %i", error);
+    } else if (nodeid != MapNode:0) {
+        new Float:dist1, Float:dist2;
+        GetMapNodeDistanceFromPoint(nodeid, -2427.625000, -2474.750000, 35.750000, dist1);
+        GetMapNodeDistanceFromPoint(MapNode:0, -2427.625000, -2474.750000, 35.750000, dist2);
+        printf("nodeid: %i %f %f", _:nodeid, dist1, dist2);
+    } else {
+        new Float:distance;
+        error = GetMapNodeDistanceFromPoint(nodeid, -2427.625000, -2474.750000, 35.750000, distance);
+
+        if (error) {
+            printf("GetMapNodeDistanceFromPoint: %i", error);
+        } else if (distance > 0.001) {
+            printf("distance: %f", distance);
+        }
+    }
+
+    new connection_count, Float:angle, Float:angle2;
+    GetMapNodeConnectionCount(nodeid, connection_count);
+    GetAngleBetweenMapNodes(nodeid, MapNode:25, angle);
+    GetMapNodeAngleFromPoint(nodeid, 0.0, 0.0, angle2);
+
+    printf("%i %i %f %f", GetHighestMapNodeID(), connection_count, angle, angle2);
+
     Test(MapNode:1,  MapNode:2);
     Test(MapNode:82, MapNode:90);
     Test(MapNode:1,  MapNode:27751);

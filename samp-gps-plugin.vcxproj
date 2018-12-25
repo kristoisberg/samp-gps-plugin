@@ -139,6 +139,7 @@
     <ClCompile Include="src\callback.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\natives.cpp" />
+    <ClCompile Include="src\node.cpp" />
     <ClCompile Include="src\pathfinder.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -153,7 +154,9 @@
     <ClInclude Include="src\amx.h" />
     <ClInclude Include="src\callback.h" />
     <ClInclude Include="src\common.h" />
+    <ClInclude Include="src\connection.h" />
     <ClInclude Include="src\natives.h" />
+    <ClInclude Include="src\node.h" />
     <ClInclude Include="src\pathfinder.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

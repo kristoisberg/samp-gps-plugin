@@ -1,12 +1,18 @@
 #include <map>
 #include <thread>
 #include <iostream>
+#include <random>
+#include <algorithm>
 
 #include "natives.h"
 #include "callback.h"
+#include "node.h"
 
 
 namespace Natives {
+    std::mt19937 mersenne{std::random_device{}()};
+
+
     cell AMX_NATIVE_CALL IsValidMapNode(AMX* amx, cell* params) {
         CHECK_PARAMS(1);
 
@@ -16,27 +22,71 @@ namespace Natives {
     }
 
 
+    cell AMX_NATIVE_CALL GetHighestMapNodeID(AMX* amx, cell* params) {
+        return Pathfinder::highest_node_id;
+    }
+
+
+    cell AMX_NATIVE_CALL GetRandomMapNode(AMX* amx, cell* params) {
+        CHECK_PARAMS(1);
+
+        if (Pathfinder::nodes.empty()) {
+            return GPS_ERROR_INVALID_NODE;
+        }
+
+        std::vector<std::pair<int, Node>> result;
+
+        std::sample(Pathfinder::nodes.begin(), Pathfinder::nodes.end(), std::back_inserter(result), 1, mersenne);
+
+        cell* addr = NULL;
+        amx_GetAddr(amx, params[1], &addr);
+        *addr = result.at(0).second.getID();
+
+        return GPS_ERROR_NONE;
+    }
+
+
     cell AMX_NATIVE_CALL GetMapNodePos(AMX* amx, cell* params) {
         CHECK_PARAMS(4);
 
         int id = static_cast<int>(params[1]);
-        Pathfinder::Node* node = Pathfinder::GetNodeByID(id);
+        Node* node = Pathfinder::GetNodeByID(id);
+
+        if (node == nullptr) {
+            return GPS_ERROR_INVALID_NODE;
+        }
+
+        float x = node->getX(), y = node->getY(), z = node->getZ();
+
+        cell* addr = NULL;
+
+        amx_GetAddr(amx, params[2], &addr);
+        *addr = amx_ftoc(x);
+
+        amx_GetAddr(amx, params[3], &addr);
+        *addr = amx_ftoc(y);
+
+        amx_GetAddr(amx, params[4], &addr);
+        *addr = amx_ftoc(z);
+        
+        return GPS_ERROR_NONE;
+    }
+
+
+    cell AMX_NATIVE_CALL GetMapNodeConnectionCount(AMX* amx, cell* params) {
+        CHECK_PARAMS(2);
+
+        int id = static_cast<int>(params[1]);
+        Node* node = Pathfinder::GetNodeByID(id);
 
         if (node == nullptr) {
             return GPS_ERROR_INVALID_NODE;
         }
 
         cell* addr = NULL;
-
         amx_GetAddr(amx, params[2], &addr);
-        *addr = amx_ftoc(node->x);
+        *addr = node->getConnections().size();
 
-        amx_GetAddr(amx, params[3], &addr);
-        *addr = amx_ftoc(node->y);
-
-        amx_GetAddr(amx, params[4], &addr);
-        *addr = amx_ftoc(node->z);
-        
         return GPS_ERROR_NONE;
     }
 
@@ -45,21 +95,21 @@ namespace Natives {
         CHECK_PARAMS(3);
 
         int first_id = static_cast<int>(params[1]);
-        Pathfinder::Node* first = Pathfinder::GetNodeByID(first_id);
+        Node* first = Pathfinder::GetNodeByID(first_id);
 
         if (first == nullptr) {
             return GPS_ERROR_INVALID_NODE;
         }
 
         int second_id = static_cast<int>(params[2]);
-        Pathfinder::Node* second = Pathfinder::GetNodeByID(second_id);
+        Node* second = Pathfinder::GetNodeByID(second_id);
 
         if (second == nullptr) {
             return GPS_ERROR_INVALID_NODE;
         }
 
-        float distance = Pathfinder::GetDistanceBetweenNodes(first, second);
-
+        float distance = first->getDistanceFromNode(second);
+     
         cell* addr = NULL;
         amx_GetAddr(amx, params[3], &addr);
         *addr = amx_ftoc(distance);
@@ -72,7 +122,7 @@ namespace Natives {
         CHECK_PARAMS(5);
 
         int id = static_cast<int>(params[1]);
-        Pathfinder::Node* node = Pathfinder::GetNodeByID(id);
+        Node* node = Pathfinder::GetNodeByID(id);
 
         if (node == nullptr) {
             return GPS_ERROR_INVALID_NODE;
@@ -80,11 +130,60 @@ namespace Natives {
 
         float x = amx_ctof(params[2]), y = amx_ctof(params[3]), z = amx_ctof(params[4]);
 
-        float distance = Pathfinder::GetNodeDistanceFromPoint(node, x, y, z);
+        float distance = node->getDistanceFromPoint(x, y, z);
 
         cell* addr = NULL;
         amx_GetAddr(amx, params[5], &addr);
         *addr = amx_ftoc(distance);
+     
+        return GPS_ERROR_NONE;
+    }
+
+    
+    cell AMX_NATIVE_CALL GetAngleBetweenMapNodes(AMX* amx, cell* params) {
+        CHECK_PARAMS(3);
+
+        int first_id = static_cast<int>(params[1]);
+        Node* first = Pathfinder::GetNodeByID(first_id);
+
+        if (first == nullptr) {
+            return GPS_ERROR_INVALID_NODE;
+        }
+
+        int second_id = static_cast<int>(params[2]);
+        Node* second = Pathfinder::GetNodeByID(second_id);
+
+        if (second == nullptr) {
+            return GPS_ERROR_INVALID_NODE;
+        }
+
+        float angle = first->getAngleFromNode(second);
+     
+        cell* addr = NULL;
+        amx_GetAddr(amx, params[3], &addr);
+        *addr = amx_ftoc(angle);
+
+        return GPS_ERROR_NONE;
+    }
+
+
+    cell AMX_NATIVE_CALL GetMapNodeAngleFromPoint(AMX* amx, cell* params) {
+        CHECK_PARAMS(4);
+
+        int id = static_cast<int>(params[1]);
+        Node* node = Pathfinder::GetNodeByID(id);
+
+        if (node == nullptr) {
+            return GPS_ERROR_INVALID_NODE;
+        }
+
+        float x = amx_ctof(params[2]), y = amx_ctof(params[3]);
+
+        float angle = node->getAngleFromPoint(x, y);
+
+        cell* addr = NULL;
+        amx_GetAddr(amx, params[4], &addr);
+        *addr = amx_ftoc(angle);
      
         return GPS_ERROR_NONE;
     }
@@ -94,42 +193,29 @@ namespace Natives {
         CHECK_PARAMS(5);
 
         float x = amx_ctof(params[1]), y = amx_ctof(params[2]), z = amx_ctof(params[3]);
-
-        int ignoredid = static_cast<int>(params[5]);
-        Pathfinder::Node* ignored = nullptr;
-
-        if (ignoredid != INVALID_NODE_ID) {
-            ignored = Pathfinder::GetNodeByID(ignoredid);
-
-            if (ignored == nullptr) {
-                return GPS_ERROR_INVALID_NODE;
-            }
-        }
-
-        Pathfinder::Node* result = nullptr;
+        int ignored = static_cast<int>(params[5]);
+        int result = INVALID_NODE_ID;
         float distance = std::numeric_limits<float>::infinity(), temp = 0.0f;
+        int id = INVALID_NODE_ID;
 
-        for (std::pair<int, Pathfinder::Node> node : Pathfinder::nodes) {
-            if (ignored == &node.second) {
+        for (std::pair<int, Node> node : Pathfinder::nodes) {
+            id = node.second.getID();
+
+            if (ignored == id) {
                 continue;
             }
 
-            temp = Pathfinder::GetNodeDistanceFromPoint(&node.second, x, y, z);
+            temp = node.second.getDistanceFromPoint(x, y, z);
 
             if (temp < distance) {
-                result = &node.second;
+                result = id;
                 distance = temp;
             }
         }
 
         cell* addr = NULL;
         amx_GetAddr(amx, params[4], &addr);
-
-        if (result == nullptr) {
-            *addr = INVALID_NODE_ID;
-        } else {
-            *addr = result->id;
-        }   
+        *addr = result; 
      
         return GPS_ERROR_NONE;
     }
@@ -139,14 +225,14 @@ namespace Natives {
         CHECK_PARAMS(3);
 
         int start_id = static_cast<int>(params[1]);
-        Pathfinder::Node* start = Pathfinder::GetNodeByID(start_id);
+        Node* start = Pathfinder::GetNodeByID(start_id);
 
         if (start == nullptr) {
             return GPS_ERROR_INVALID_NODE;
         }
 
         int target_id = static_cast<int>(params[2]);
-        Pathfinder::Node* target = Pathfinder::GetNodeByID(target_id);
+        Node* target = Pathfinder::GetNodeByID(target_id);
 
         if (target == nullptr) {
             return GPS_ERROR_INVALID_NODE;
@@ -173,14 +259,14 @@ namespace Natives {
         }
 
         int start_id = static_cast<int>(params[1]);
-        Pathfinder::Node* start = Pathfinder::GetNodeByID(start_id);
+        Node* start = Pathfinder::GetNodeByID(start_id);
 
         if (start == nullptr) {
             return GPS_ERROR_INVALID_NODE;
         }
 
         int target_id = static_cast<int>(params[2]);
-        Pathfinder::Node* target = Pathfinder::GetNodeByID(target_id);
+        Node* target = Pathfinder::GetNodeByID(target_id);
 
         if (target == nullptr) {
             return GPS_ERROR_INVALID_NODE;
@@ -268,7 +354,7 @@ namespace Natives {
 
         cell* addr = NULL;
         amx_GetAddr(amx, params[3], &addr);
-        *addr = path->nodes.at(index)->id;
+        *addr = path->nodes.at(index)->getID();
 
         return GPS_ERROR_NONE;
     }

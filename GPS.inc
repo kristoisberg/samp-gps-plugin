@@ -24,8 +24,13 @@ enum _:GPS_ERROR {
 native bool:IsValidMapNode(MapNode:nodeid);
 native GetMapNodePos(MapNode:nodeid, &Float:x, &Float:y, &Float:z);
 native GetDistanceBetweenMapNodes(MapNode:first, MapNode:second, &Float:distance);
+native GetAngleBetweenMapNodes(MapNode:first, MapNode:second, &Float:angle);
 native GetMapNodeDistanceFromPoint(MapNode:nodeid, Float:x, Float:y, Float:z, &Float:distance);
+native GetMapNodeAngleFromPoint(MapNode:nodeid, Float:x, Float:y, &Float:angle);
 native GetClosestMapNodeToPoint(Float:x, Float:y, Float:z, &MapNode:nodeid, MapNode:ignorednode = INVALID_MAP_NODE_ID);
+native GetMapNodeConnectionCount(MapNode:nodeid, &count);
+native GetHighestMapNodeID();
+native GetRandomMapNode(&MapNode:nodeid);
 
 
 native FindPath(MapNode:start, MapNode:target, &Path:pathid);

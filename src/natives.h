@@ -29,13 +29,13 @@ namespace Natives {
     cell AMX_NATIVE_CALL IsValidMapNode(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetMapNodePos(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetDistanceBetweenMapNodes(AMX* amx, cell* params);
-	//cell AMX_NATIVE_CALL GetAngleBetweenMapNodes(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL GetAngleBetweenMapNodes(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetMapNodeDistanceFromPoint(AMX* amx, cell* params);
-	//cell AMX_NATIVE_CALL GetMapNodeAngleFromPoint(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL GetMapNodeAngleFromPoint(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetClosestMapNodeToPoint(AMX* amx, cell* params);
-	//cell AMX_NATIVE_CALL GetMapNodeConnectionCount(AMX* amx, cell* params);
-	//cell AMX_NATIVE_CALL GetHighestMapNodeID(AMX* amx, cell* params);
-	//cell AMX_NATIVE_CALL GetRandomMapNode(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL GetMapNodeConnectionCount(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL GetHighestMapNodeID(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL GetRandomMapNode(AMX* amx, cell* params);
 
 	cell AMX_NATIVE_CALL FindPath(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL FindPathThreaded(AMX* amx, cell* params);

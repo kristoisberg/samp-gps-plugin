@@ -5,33 +5,23 @@
 #include <limits>
 
 #include "common.h"
+#include "node.h"
+#include "connection.h"
 #include "callback.h"
 
 
 namespace Pathfinder {
     extern float infinity;
 
-    struct Connection; 
-
-    struct Node {
-        float x = 0.0f, y = 0.0f, z = 0.0f;
-        int id = 0;
-        std::vector<Connection> connections;
-    };
-
-    struct Connection {
-        Node* target;
-        float distance = 0.0f;
-    };
-
     struct ShortestPathTo {
         Node* node;
         ShortestPathTo* previous;
         float distance = infinity;
         float target_distance = infinity;
+        float total_distance = infinity;
 
         friend bool operator<(const ShortestPathTo& lhs, const ShortestPathTo& rhs) {
-            return lhs.distance + lhs.target_distance < rhs.distance + rhs.target_distance;
+            return lhs.total_distance < rhs.total_distance;
         };
     };
 
@@ -42,8 +32,9 @@ namespace Pathfinder {
 
 
     extern std::unordered_map<int, Node> nodes;
+    extern int highest_node_id;
 
-    extern std::unordered_map<int, Pathfinder::Path> paths;
+    extern std::unordered_map<int, Path> paths;
     extern int path_count;
 
 
@@ -51,9 +42,8 @@ namespace Pathfinder {
     bool AddConnection(int startid, int targetid);
 
     Node* GetNodeByID(int id);
-    float GetNodeDistanceFromPoint(Node* node, float x, float y, float z);
-    float GetDistanceBetweenNodes(Node* first, Node* second);
 
+    Path* FindPathInternal(Node* start, Node* target);
     int FindPath(Node* start, Node* target);
     void FindPathThreaded(Node* start, Node* target, Callback* callback);
 

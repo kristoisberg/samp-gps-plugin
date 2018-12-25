@@ -11,9 +11,9 @@ namespace Pathfinder {
     float infinity = std::numeric_limits<float>::infinity();
 
     std::unordered_map<int, Node> nodes;
-    int largest_node_id = -1;
+    int highest_node_id = -1;
 
-    std::unordered_map<int, Pathfinder::Path> paths;
+    std::unordered_map<int, Path> paths;
     int path_count = 0;
 
 
@@ -22,10 +22,10 @@ namespace Pathfinder {
             return false;
         }
 
-        nodes.insert({id, Node{x, y, z, id}});
+        nodes.insert({id, Node{id, x, y, z}});
 
-        if (id > largest_node_id) {
-            largest_node_id = id;
+        if (id > highest_node_id) {
+            highest_node_id = id;
         }
 
         return true;
@@ -45,7 +45,7 @@ namespace Pathfinder {
             return false;
         }
 
-        start->connections.push_back(Connection{target, GetDistanceBetweenNodes(start, target)});
+        start->addConnection(new Connection{target, start->getDistanceFromNode(target)});
         return true;
     }
 
@@ -61,31 +61,21 @@ namespace Pathfinder {
     }
 
 
-    float GetNodeDistanceFromPoint(Node* node, float x, float y, float z) {
-        return sqrt(pow(node->x - x, 2.0f) + pow(node->y - y, 2.0f) + pow(node->z - z, 2.0f));
-    }
-
-
-    float GetDistanceBetweenNodes(Node* first, Node* second) {
-        return GetNodeDistanceFromPoint(first, second->x, second->y, second->z);
-    }
-
-
     Path* FindPathInternal(Node* start, Node* target) {
         if (start == target) {
             return new Path{{start}, 0.0f};
         }
 
         std::priority_queue<ShortestPathTo*> queue;
-        std::vector<ShortestPathTo> existing_paths(largest_node_id + 1);
+        std::vector<ShortestPathTo> existing_paths(highest_node_id + 1);
         ShortestPathTo* path = nullptr;
         ShortestPathTo* next_path = nullptr;
         ShortestPathTo* solution = nullptr;
         float distance = 0.0f;
 
-        path = &existing_paths.at(start->id);
+        path = &existing_paths.at(start->getID());
         path->distance = 0.0f;
-        path->target_distance = GetDistanceBetweenNodes(start, target);
+        path->total_distance = path->target_distance = start->getDistanceFromNode(target);
         path->previous = nullptr;
         path->node = start;
         
@@ -99,23 +89,24 @@ namespace Pathfinder {
                 continue;
             }
 
-            for (Connection const& connection : path->node->connections) {
-                next_path = &existing_paths.at(connection.target->id);
-                distance = path->distance + connection.distance;
+            for (Connection* connection : path->node->getConnections()) {
+                next_path = &existing_paths.at(connection->target->getID());
+                distance = path->distance + connection->distance;
 
                 if (next_path->distance > distance) {
                     if (next_path->distance == infinity) {
-                        next_path->node = connection.target;
-                        next_path->target_distance = GetDistanceBetweenNodes(connection.target, target);
+                        next_path->node = connection->target;
+                        next_path->target_distance = target->getDistanceFromNode(connection->target);
 
-                        if (connection.target == target) {
+                        if (connection->target == target) {
                             solution = next_path;
                         }
                     }
 
                     next_path->distance = distance;
                     next_path->previous = path;
-
+                    next_path->total_distance = next_path->target_distance + distance;
+                    
                     queue.push(next_path);
                 }
             }
