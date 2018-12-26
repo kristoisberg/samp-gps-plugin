@@ -7,6 +7,7 @@
 #include "natives.h"
 #include "callback.h"
 #include "node.h"
+#include "path.h"
 
 
 namespace Natives {
@@ -34,13 +35,13 @@ namespace Natives {
             return GPS_ERROR_INVALID_NODE;
         }
 
-        std::vector<std::pair<int, Node>> result;
+        std::vector<std::pair<int, Node*>> result;
 
         std::sample(Pathfinder::nodes.begin(), Pathfinder::nodes.end(), std::back_inserter(result), 1, mersenne);
 
         cell* addr = NULL;
         amx_GetAddr(amx, params[1], &addr);
-        *addr = result.at(0).second.getID();
+        *addr = result.at(0).second->getID();
 
         return GPS_ERROR_NONE;
     }
@@ -198,14 +199,14 @@ namespace Natives {
         float distance = std::numeric_limits<float>::infinity(), temp = 0.0f;
         int id = INVALID_NODE_ID;
 
-        for (std::pair<int, Node> node : Pathfinder::nodes) {
-            id = node.second.getID();
+        for (std::pair<int, Node*> node : Pathfinder::nodes) {
+            id = node.second->getID();
 
             if (ignored == id) {
                 continue;
             }
 
-            temp = node.second.getDistanceFromPoint(x, y, z);
+            temp = node.second->getDistanceFromPoint(x, y, z);
 
             if (temp < distance) {
                 result = id;
@@ -304,7 +305,7 @@ namespace Natives {
         CHECK_PARAMS(2);
 
         int id = static_cast<int>(params[1]); 
-        Pathfinder::Path* path = Pathfinder::GetPathByID(id);
+        Path* path = Pathfinder::GetPathByID(id);
 
         if (path == nullptr) {
             return GPS_ERROR_INVALID_PATH;
@@ -312,7 +313,7 @@ namespace Natives {
 
         cell* addr = NULL;
         amx_GetAddr(amx, params[2], &addr);
-        *addr = path->nodes.size();
+        *addr = path->getNodes().size();
 
         return GPS_ERROR_NONE;
     }
@@ -322,39 +323,42 @@ namespace Natives {
         CHECK_PARAMS(2);
 
         int id = static_cast<int>(params[1]);
-        Pathfinder::Path* path = Pathfinder::GetPathByID(id);
+        Path* path = Pathfinder::GetPathByID(id);
 
         if (path == nullptr) {
             return GPS_ERROR_INVALID_PATH;
         }
 
+        float result = path->getLength();
+
         cell* addr = NULL;
         amx_GetAddr(amx, params[2], &addr);
-        *addr = amx_ftoc(path->length);
+        *addr = amx_ftoc(result);
 
         return GPS_ERROR_NONE;
     }
 
 
-    cell AMX_NATIVE_CALL GetPathNode(AMX* amx, cell* params) {
+    cell AMX_NATIVE_CALL GetPathNode(AMX* amx, cell* params) { 
         CHECK_PARAMS(3);
 
         int id = static_cast<int>(params[1]);
-        Pathfinder::Path* path = Pathfinder::GetPathByID(id);
+        Path* path = Pathfinder::GetPathByID(id);
 
         if (path == nullptr) {
             return GPS_ERROR_INVALID_PATH;
         }
 
         unsigned int index = static_cast<unsigned int>(params[2]);
+        std::deque<Node*> nodes = path->getNodes();
 
-        if (index < 0 || index >= path->nodes.size()) {
+        if (index < 0 || index >= nodes.size()) {
             return GPS_ERROR_INVALID_NODE;
         }
 
         cell* addr = NULL;
         amx_GetAddr(amx, params[3], &addr);
-        *addr = path->nodes.at(index)->getID();
+        *addr = nodes.at(index)->getID();
 
         return GPS_ERROR_NONE;
     }
@@ -364,11 +368,13 @@ namespace Natives {
         CHECK_PARAMS(1);
 
         int id = static_cast<int>(params[1]);
-        Pathfinder::Path* path = Pathfinder::GetPathByID(id);
+        Path* path = Pathfinder::GetPathByID(id);
 
         if (path == nullptr) {
             return GPS_ERROR_INVALID_PATH;
         }
+
+        delete path;
 
         Pathfinder::paths.erase(id);
 

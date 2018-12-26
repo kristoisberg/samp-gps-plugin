@@ -5,10 +5,6 @@
 #include "pathfinder.h"
 
 
-#define INVALID_NODE_ID -1
-#define INVALID_PATH_ID -1
-
-
 enum {
     GPS_ERROR_NONE              =  0,
     GPS_ERROR_INVALID_PARAMS    = -1,

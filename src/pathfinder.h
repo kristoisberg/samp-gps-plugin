@@ -5,8 +5,9 @@
 #include <limits>
 
 #include "common.h"
-#include "node.h"
 #include "connection.h"
+#include "node.h"
+#include "path.h"
 #include "callback.h"
 
 
@@ -25,16 +26,11 @@ namespace Pathfinder {
         };
     };
 
-    struct Path {
-        std::vector<Node*> nodes;
-        float length = 0.0f;
-    };
 
-
-    extern std::unordered_map<int, Node> nodes;
+    extern std::unordered_map<int, Node*> nodes;
     extern int highest_node_id;
 
-    extern std::unordered_map<int, Path> paths;
+    extern std::unordered_map<int, Path*> paths;
     extern int path_count;
 
 

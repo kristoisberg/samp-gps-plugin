@@ -2,19 +2,27 @@
 #include <set>
 #include <queue>
 #include <iostream>
+#include <exception>
 
 #include "pathfinder.h"
 #include "amx.h"
-
+ 
 
 namespace Pathfinder {
     float infinity = std::numeric_limits<float>::infinity();
 
-    std::unordered_map<int, Node> nodes;
+    std::unordered_map<int, Node*> nodes;
     int highest_node_id = -1;
 
-    std::unordered_map<int, Path> paths;
+    std::unordered_map<int, Path*> paths;
     int path_count = 0;
+
+
+    struct PathNotFoundException : public std::exception {
+        const char* what() const throw() {
+            return "Failed to find a path!";
+        }
+    };
 
 
     bool AddNode(int id, float x, float y, float z) {
@@ -22,7 +30,7 @@ namespace Pathfinder {
             return false;
         }
 
-        nodes.insert({id, Node{id, x, y, z}});
+        nodes[id] = new Node(id, x, y, z);
 
         if (id > highest_node_id) {
             highest_node_id = id;
@@ -54,7 +62,7 @@ namespace Pathfinder {
         auto node = nodes.find(id);
 
         if (node != nodes.end()) {
-            return &node->second;
+            return node->second;
         } else {
             return nullptr;
         }
@@ -63,7 +71,9 @@ namespace Pathfinder {
 
     Path* FindPathInternal(Node* start, Node* target) {
         if (start == target) {
-            return new Path{{start}, 0.0f};
+            Path* result = new Path(0.0f);
+            result->addNodeToEnd(start);
+            return result;
         }
 
         std::priority_queue<ShortestPathTo*> queue;
@@ -113,15 +123,13 @@ namespace Pathfinder {
         }
 
         if (solution == nullptr) {
-            return nullptr;
+            throw PathNotFoundException();
         }
 
-        Path* result = new Path();
-        result->length = solution->distance;
+        Path* result = new Path(solution->distance);
 
         while (solution != nullptr) {
-            result->nodes.insert(result->nodes.begin(), solution->node);
-
+            result->addNodeToStart(solution->node);
             solution = solution->previous;
         }
 
@@ -130,30 +138,31 @@ namespace Pathfinder {
 
 
     int FindPath(Node* start, Node* target) {
-        Path* path = FindPathInternal(start, target);
+        try {
+            Path* path = FindPathInternal(start, target);
 
-        if (path == nullptr) {
-            return -1;
+            int id = path_count++;
+            paths[id] = path;
+            return id;
+        } catch (PathNotFoundException e) {
+            return INVALID_PATH_ID;
         }
-
-        int id = path_count++;
-        paths[id] = *path;
-        return id;
     }
 
 
     void FindPathThreaded(Node* start, Node* target, Callback* callback) {
-        Path* path = FindPathInternal(start, target);
+        try {
+            Path* path = FindPathInternal(start, target);
 
-        if (path == nullptr) {
-            return;
-        }
+            int id = path_count++;
+            paths[id] = path;
 
-        int id = path_count++;
-        paths[id] = *path;
-
-        callback->setResult(id);
-        amx::QueueCallback(callback->getAMX(), callback);
+            callback->setResult(id);
+            amx::QueueCallback(callback->getAMX(), callback);
+        } catch (PathNotFoundException e) {
+            callback->setResult(INVALID_PATH_ID);
+            amx::QueueCallback(callback->getAMX(), callback);
+        }    
     }
 
 
@@ -161,7 +170,7 @@ namespace Pathfinder {
         auto path = paths.find(id);
 
         if (path != paths.end()) {
-            return &path->second;
+            return path->second;
         } else {
             return nullptr;
         }
