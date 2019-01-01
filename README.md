@@ -2,20 +2,20 @@
 
 [![sampctl](https://shields.southcla.ws/badge/sampctl-samp--gps--plugin-2f2f2f.svg?style=for-the-badge)](https://github.com/kristoisberg/samp-gps-plugin)
 
-This plugin offers a way of accessing the data of San Andreas map nodes and finding paths between them. It is intended to be a modern and straightforward replacement for RouteConnector. The plugin uses a simple implementation of the A* algorithm for pathfinding. Finding a path from the top-leftmost node on the map to the bottom-rightmost node that consists of 684 nodes takes just under one second and most shorter paths only take a few milliseconds. It is worth noting that this is my first successful project in C++ and the last time I tried writing something in C++ was over half a year ago so there is a lot of room for improvement and I am planning to continue improving the code of this plugin as I progress.
+This plugin offers a way of accessing the data of San Andreas map nodes and finding paths between them. It is intended to be a modern and straightforward replacement for RouteConnector. The plugin uses a simple implementation of the A* algorithm for pathfinding. Finding a path from the top-leftmost node on the map to the bottom-rightmost node that consists of 684 nodes takes just a few milliseconds. It is worth noting that this is my first successful project in C++ and the last time I tried writing something in C++ was over half a year ago so there is a lot of room for improvement and I am planning to continue improving the code of this plugin as I progress.
 
 
 ### Advantages over RouteConnector
 
-* **Safer API** - Unlike RouteConnector, this plugins does not give you an array of nodes as the result of pathfinding. Instead of that, it gives you the ID of the found path that can be used later on. Each function (except `IsValidMapNode` and `IsValidPath`) returns an error code and the real result of them is passed by reference.
+* **Safer API** - Unlike RouteConnector, this plugins does not give you an array of nodes as the result of pathfinding. Instead of that, it gives you the ID of the found path that can be used later on. Each function (except `IsValidMapNode`, `IsValidPath` and `GetHighestMapNodeID`) returns an error code and the real result of them is passed by reference.
 * **Compatibility** - RouteConnector has a compatibility issue with some part of YSI that makes it call a wrong public function instead of the actual `GPS_WhenRouteIsCalculated` callback. This plugin lets you call a custom callback and pass arguments to it. In addition to that, RouteConnector uses Intel Threading Building Blocks for threading that has caused numerous compatibility (and PEBCAK) issues on Linux servers. This plugin uses `std::thread` for threading and does not have any dependencies. This plugin is also compatible with PawnPlus and supports asynchronous pathfinding out of box.
 * **Active development** - RouteConnector has not been updated for over three years. As I said previously, I am planning to continue active development of this plugin for a long period of time.
+* **Performance** - I have not done any benchmarks, but even with older versions users claimed that this plugin is multiple times faster than RouteConnector. A fix in the algorithm in version 1.2.0 made it around 30 times faster than it previously was.
 
 
 ### Disadvantages over RouteConnector
 
-* **Performance** - I highly doubt that the plugin performs better than RouteConnector, but since most pathfinding tasks only take a fraction of a second, there should be absolutely no performance issues as long as threaded/asynchronous pathfinding functions are used.
-* **Functionality** - At the current time, this plugin only replaces RouteConnector in the areas of accessing map node data and pathfinding. There is no way of managing nodes or their connections in runtime or modifying the `GPS.dat` file.
+* **Functionality** - At the current time, this plugin only replaces RouteConnector in the areas of accessing map node data and pathfinding. There is no way of managing nodes or their connections in runtime or modifying the `GPS.dat` file, however these features will be added in future versions.
 
 
 ## Installation
@@ -50,13 +50,33 @@ Include in your code and begin using the library:
 
 * If both of the specified map nodes are valid, returns `GPS_ERROR_NONE` and passes the distance between them to `distance`, otherwise returns `GPS_ERROR_INVALID_NODE`.
 
+`GetAngleBetweenMapNodes(MapNode:first, MapNode:second, &Float:angle)`
+
+* If both of the specified map nodes are valid, returns `GPS_ERROR_NONE` and passes the angle between them to `angle`, otherwise returns `GPS_ERROR_INVALID_NODE`.
+
 `GetMapNodeDistanceFromPoint(MapNode:nodeid, Float:x, Float:y, Float:z, &Float:distance)`
 
 * If the specified map node is valid, returns `GPS_ERROR_NONE` and passes the distance of the map node from the specified position to `distance`, otherwise returns `GPS_ERROR_INVALID_NODE`.
 
+`GetMapNodeAngleFromPoint(MapNode:nodeid, Float:x, Float:y, &Float:angle)`
+
+* If the specified map node is valid, returns `GPS_ERROR_NONE` and passes the angle of the map node from the specified position to `angle`, otherwise returns `GPS_ERROR_INVALID_NODE`.
+
 `GetClosestMapNodeToPoint(Float:x, Float:y, Float:z, &MapNode:nodeid, MapNode:ignorednode = INVALID_MAP_NODE_ID)`
 
-* Passes the closest map node to the specified position to `nodeid`. If `ignorednode` is specified and it is the closest node to the position, it is ignored and the next closest node is returned instead.
+* Passes the ID of the closest map node to the specified position to `nodeid`. If `ignorednode` is specified and it is the closest node to the position, it is ignored and the ID of the next closest node is passed to `nodeid` instead. Returns `GPS_ERROR_INVALID_NODE` if no nodes exist, otherwise returns `GPS_ERROR_NONE`.
+
+`GetMapNodeConnectionCount(MapNode:nodeid, &count)`
+
+* If the specified map node is valid, returns `GPS_ERROR_NONE` and passes the amount of its connections to `count`, otherwise returns `GPS_ERROR_INVALID_NODE`. If `count` is larger than 2, the node is an intersection.
+
+`GetHighestMapNodeID()`
+
+* Returns the ID of the map node with the highest ID. Could be used for iteration purposes.
+
+`GetRandomMapNode(&MapNode:nodeid)`
+
+* Passes the ID of a random map node, found using Mersenne Twister, to `nodeid`. Returns `GPS_ERROR_INVALID_NODE` if no map nodes exist, otherwise returns `GPS_ERROR_NONE`.
 
 `FindPath(MapNode:start, MapNode:target, &Path:pathid)`
 
@@ -82,6 +102,10 @@ Include in your code and begin using the library:
 
 * If the specified path is valid and the index contains a node, returns `GPS_ERROR_NONE` and passes the ID of the node at that index to `nodeid`, otherwise returns `GPS_ERROR_INVALID_PATH` or `GPS_ERROR_INVALID_NODE` depending on the error.
 
+`GetPathNodeIndex(Path:pathid, MapNode:nodeid, &index)`
+
+* If the specified path is valid and the specified map node is a part of the path, returns `GPS_ERROR_NONE` and passes the index of the map node to `index`, otherwise returns `GPS_ERROR_INVALID_PATH` or `GPS_ERROR_INVALID_NODE` depending on the error.
+
 `GetPathLength(Path:pathid, &Float:length)`
 
 * If the specified path is valid, returns `GPS_ERROR_NONE` and passes the length of the path in metres to `length`, otherwise returns `GPS_ERROR_INVALID_PATH`.
@@ -96,7 +120,7 @@ Include in your code and begin using the library:
 * `GPS_ERROR_NONE` - The function was executed successfully.
 * `GPS_ERROR_INVALID_PARAMS` - An invalid amount of arguments was passed to the function. Should never happen without the PAWN compiler noticing it unless the versions of the plugin and include are different.
 * `GPS_ERROR_INVALID_PATH` - An invalid path ID as passed to the function or threaded pathfinding was not successful.
-* `GPS_ERROR_INVALID_NODE` - An invalid map node ID/index was passed to the function or `GetClosestMapNodeToPoint` failed because `GPS.dat` failed to load.
+* `GPS_ERROR_INVALID_NODE` - An invalid map node ID/index was passed to the function or `GetClosestMapNodeToPoint` or `GetRandomMapNode` failed because no map nodes exist.
 * `GPS_ERROR_INTERNAL` - An internal error happened - threaded pathfinding failed because dispatching a thread failed.
 
 
@@ -213,6 +237,6 @@ sampctl package run
 ## Credits
 
 * kvann - Creator of the plugin.
-* Gamer_Z - Creator of the original RouteConnector plugin which helped me understand the structure of GPS.dat and influenced this plugin a lot. Also the author of the original GPS.dat?
+* Gamer_Z - Creator of the original RouteConnector plugin which helped me understand the structure of GPS.dat and influenced this plugin a lot, the author of the original `GPS.dat`.
 * NaS - Author of the fixed GPS.dat distributed with the plugin.
 * Southclaws, IllidanS4 - Helped me with the plugin in major ways (there were other helpful people as well, I appreciate it all).
