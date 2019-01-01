@@ -41,6 +41,7 @@ native bool:IsValidPath(Path:pathid);
 native GetPathSize(Path:pathid, &size);
 native GetPathLength(Path:pathid, &Float:length);
 native GetPathNode(Path:pathid, index, &MapNode:nodeid);
+native GetPathNodeIndex(Path:pathid, MapNode:nodeid, &index);
 native DestroyPath(Path:pathid);
 
 

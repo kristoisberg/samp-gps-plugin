@@ -57,6 +57,7 @@ AMX_NATIVE_INFO PluginNatives[] = {
 	{"GetPathSize",					Natives::GetPathSize},
 	{"GetPathLength",				Natives::GetPathLength},
 	{"GetPathNode",					Natives::GetPathNode},
+	{"GetPathNodeIndex",			Natives::GetPathNodeIndex},
 	{"DestroyPath",					Natives::DestroyPath},
 
 	{0, 0}

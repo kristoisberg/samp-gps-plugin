@@ -82,7 +82,7 @@ Test(MapNode:start, MapNode:target) {
 
 
 Test2(Path:path) {
-    new Float:x, Float:y, Float:z, size, Float:length, MapNode:node;
+    new Float:x, Float:y, Float:z, size, Float:length, MapNode:node, index;
     GetPathSize(path, size);
     GetPathLength(path, length);
 
@@ -90,8 +90,9 @@ Test2(Path:path) {
 
     for (new i; i < size; i++) {
         GetPathNode(path, i, node);
+        GetPathNodeIndex(path, node, index);
         GetMapNodePos(node, x, y, z);
-        printf("%i: %f %f %f", i + 1, x, y, z);
+        printf("%i: %f %f %f %i %s", i + 1, x, y, z, index + 1, (i == index) ? ("YES") : ("NO"));
     }
 
     DestroyPath(path);

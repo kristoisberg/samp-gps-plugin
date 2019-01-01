@@ -40,5 +40,6 @@ namespace Natives {
 	cell AMX_NATIVE_CALL GetPathSize(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetPathLength(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetPathNode(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL GetPathNodeIndex(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL DestroyPath(AMX* amx, cell* params);
 }

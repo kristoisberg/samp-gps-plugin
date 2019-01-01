@@ -364,6 +364,39 @@ namespace Natives {
     }
 
 
+    cell AMX_NATIVE_CALL GetPathNodeIndex(AMX* amx, cell* params) {
+        CHECK_PARAMS(3);
+
+        int id = static_cast<int>(params[1]);
+        Path* path = Pathfinder::GetPathByID(id);
+
+        if (path == nullptr) {
+            return GPS_ERROR_INVALID_PATH;
+        }
+
+        int nodeid = static_cast<int>(params[2]);
+        Node* node = Pathfinder::GetNodeByID(nodeid);
+
+        if (node == nullptr) {
+            return GPS_ERROR_INVALID_NODE;
+        }
+
+        std::deque<Node*> nodes = path->getNodes();
+
+        for (unsigned int i = 0; i < nodes.size(); i++) {
+            if (nodes.at(i) == node) {
+                cell* addr = NULL;
+                amx_GetAddr(amx, params[3], &addr);
+                *addr = i;
+
+                return GPS_ERROR_NONE;
+            }
+        }
+
+        return GPS_ERROR_INVALID_NODE;
+    }
+
+
     cell AMX_NATIVE_CALL DestroyPath(AMX* amx, cell* params) {
         CHECK_PARAMS(1);
 
