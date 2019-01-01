@@ -11,6 +11,24 @@
 namespace Pathfinder {
     float infinity = std::numeric_limits<float>::infinity();
 
+    struct VisitedNode {
+        Node* node;
+        VisitedNode* previous;
+        float distance = infinity;
+        float target_distance = infinity;
+        float total_distance = infinity;
+
+        friend bool operator<(const VisitedNode& lhs, const VisitedNode& rhs) {
+            return lhs.total_distance < rhs.total_distance;
+        };
+    };
+
+    struct NodeComparison {
+        bool operator() (const VisitedNode* lhs, const VisitedNode* rhs) const {
+            return lhs->total_distance > rhs->total_distance;
+        }
+    };
+
     std::unordered_map<int, Node*> nodes;
     int highest_node_id = -1;
 
@@ -54,6 +72,7 @@ namespace Pathfinder {
         }
 
         start->addConnection(new Connection{target, start->getDistanceFromNode(target)});
+
         return true;
     }
 
@@ -76,11 +95,11 @@ namespace Pathfinder {
             return result;
         }
 
-        std::priority_queue<ShortestPathTo*> queue;
-        std::vector<ShortestPathTo> existing_paths(highest_node_id + 1);
-        ShortestPathTo* path = nullptr;
-        ShortestPathTo* next_path = nullptr;
-        ShortestPathTo* solution = nullptr;
+        std::priority_queue<VisitedNode*, std::vector<VisitedNode*>, NodeComparison> queue;
+        std::vector<VisitedNode> existing_paths(highest_node_id + 1);
+        VisitedNode* path = nullptr; 
+        VisitedNode* next_path = nullptr;
+        VisitedNode* solution = nullptr;
         float distance = 0.0f;
 
         path = &existing_paths.at(start->getID());
@@ -95,8 +114,8 @@ namespace Pathfinder {
             path = queue.top();
             queue.pop();
 
-            if (solution != nullptr && solution < path) {
-                continue;
+            if (solution != nullptr && *solution < *path) {
+                break;
             }
 
             for (Connection* connection : path->node->getConnections()) {

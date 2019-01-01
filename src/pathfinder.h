@@ -12,21 +12,6 @@
 
 
 namespace Pathfinder {
-    extern float infinity;
-
-    struct ShortestPathTo {
-        Node* node;
-        ShortestPathTo* previous;
-        float distance = infinity;
-        float target_distance = infinity;
-        float total_distance = infinity;
-
-        friend bool operator<(const ShortestPathTo& lhs, const ShortestPathTo& rhs) {
-            return lhs.total_distance < rhs.total_distance;
-        };
-    };
-
-
     extern std::unordered_map<int, Node*> nodes;
     extern int highest_node_id;
 
