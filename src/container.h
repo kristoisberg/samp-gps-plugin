@@ -8,13 +8,17 @@
 namespace Container
 {
 	bool AddNode(int id, float x, float y, float z);
-	bool AddConnection(int startID, int targetID);
+	
 	Node* GetNodeByID(int id);
 	std::unordered_map<int, Node*> GetNodes();
 	int GetHighestNodeID();
+	void SetNodeForDeletion(Node* node);
+	bool TryDeleteNode(Node* node);
+
+	bool AddConnection(int startID, int targetID);
 
 	int AddPath(Path* path);
-	void RemovePath(Path* path);
+	void DeletePath(Path* path);
 	Path* GetPathByID(int id);
 	std::unordered_map<int, Path*> GetPaths();
 	int GetHighestPathID();

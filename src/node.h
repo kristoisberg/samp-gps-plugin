@@ -9,8 +9,16 @@ class Node
 public:
 	Node(int id, float x, float y, float z);
 
+	void setForDeletion();
+	bool isSetForDeletion() const;
+
 	void addConnection(Connection* connection);
 	std::vector<Connection*> getConnections() const;
+
+	void addToPath(Path* path, int index);
+	void removeFromPath(Path* path);
+	int getPositionInPath(Path* path);
+	int getPathCount() const;
 
 	int getID() const;
 
@@ -26,10 +34,12 @@ public:
 
 private:
 	int id;
+	bool willBeDeleted;
 
 	float x;
 	float y;
 	float z;
 
 	std::vector<Connection*> connections;
+	std::vector<std::pair<Path*, int>> paths;
 };

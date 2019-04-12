@@ -426,21 +426,18 @@ namespace Natives
 			return GPS_ERROR_INVALID_NODE;
 		}
 
-		auto nodes = path->getNodes();
+		const auto index = node->getPositionInPath(path);
 
-		for (unsigned int i = 0; i < nodes.size(); i++)
+		if (index == -1)
 		{
-			if (nodes.at(i) == node)
-			{
-				cell* address = nullptr;
-				amx_GetAddr(amx, params[3], &address);
-				*address = i;
-
-				return GPS_ERROR_NONE;
-			}
+			return GPS_ERROR_INVALID_NODE;
 		}
 
-		return GPS_ERROR_INVALID_NODE;
+		cell* address = nullptr;
+		amx_GetAddr(amx, params[3], &address);
+		*address = index;
+
+		return GPS_ERROR_NONE;
 	}
 
 
@@ -456,7 +453,7 @@ namespace Natives
 			return GPS_ERROR_INVALID_PATH;
 		}
 
-		Container::RemovePath(path);
+		Container::DeletePath(path);
 		return GPS_ERROR_NONE;
 	}
 }

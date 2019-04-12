@@ -1,15 +1,29 @@
 #include <cmath>
 
 #include "node.h"
+#include <algorithm>
 
 
 Node::Node(const int id, const float x, const float y, const float z)
 {
 	this->id = id;
+	this->willBeDeleted = false;
 
 	this->x = x;
 	this->y = y;
 	this->z = z;
+}
+
+
+void Node::setForDeletion()
+{
+	this->willBeDeleted = true;
+}
+
+
+bool Node::isSetForDeletion() const
+{
+	return this->willBeDeleted;
 }
 
 
@@ -22,6 +36,42 @@ void Node::addConnection(Connection* connection)
 std::vector<Connection*> Node::getConnections() const
 {
 	return this->connections;
+}
+
+
+void Node::addToPath(Path* path, int index)
+{
+	this->paths.emplace_back(path, index);
+}
+
+
+int Node::getPositionInPath(Path* path)
+{
+	const auto it = std::find_if(this->paths.begin(), this->paths.end(), [&path](const std::pair<Path*, int>& pair) { return pair.first == path; });
+
+	if (it != this->paths.end())
+	{
+		return it->second;
+	}
+
+	return -1;
+}
+
+
+void Node::removeFromPath(Path* path)
+{
+	const auto it = std::find_if(this->paths.begin(), this->paths.end(), [&path](const std::pair<Path*, int>& pair) { return pair.first == path; });
+
+	if (it != this->paths.end())
+	{
+		this->paths.erase(it);
+	}
+}
+
+
+int Node::getPathCount() const
+{
+	return this->paths.size();
 }
 
 

@@ -78,6 +78,29 @@ namespace Container
 	}
 
 
+	void SetNodeForDeletion(Node* node)
+	{
+		if (!TryDeleteNode(node))
+		{
+			node->setForDeletion();
+		}
+	}
+
+
+	bool TryDeleteNode(Node* node)
+	{
+		if (node->getPathCount() > 0)
+		{
+			return false;
+		}
+
+		nodes.erase(node->getID());
+
+		delete node;
+		return true;
+	}
+
+
 	int AddPath(Path* path)
 	{
 		const auto id = highest_path_id++;
@@ -88,8 +111,18 @@ namespace Container
 		return id;
 	}
 
-	void RemovePath(Path* path)
+	void DeletePath(Path* path)
 	{
+		for (auto node : path->getNodes())
+		{
+			node->removeFromPath(path);
+
+			if (node->isSetForDeletion())
+			{
+				TryDeleteNode(node);
+			}
+		}
+
 		paths.erase(path->getID());
 
 		delete path;

@@ -108,6 +108,13 @@ namespace Pathfinder
 			solution = solution->previous;
 		}
 
+		auto index = 0;
+
+		for (auto node : result->getNodes())
+		{
+			node->addToPath(result, index++);
+		}
+
 		return result;
 	}
 
