@@ -1,10 +1,10 @@
 #include "path.h"
 
 
-Path::Path(const float length) 
+Path::Path(const float length)
 {
 	this->id = INVALID_PATH_ID;
-    this->length = length;
+	this->length = length;
 }
 
 
@@ -20,25 +20,25 @@ void Path::setID(const int id)
 }
 
 
-void Path::addNodeToStart(Node* node) 
+void Path::addNodeToStart(Node* node)
 {
-    this->nodes.push_front(node);
+	this->nodes.push_front(node);
 }
 
 
-void Path::addNodeToEnd(Node* node) 
+void Path::addNodeToEnd(Node* node)
 {
-    this->nodes.push_back(node);
+	this->nodes.push_back(node);
 }
 
 
 float Path::getLength() const
 {
-    return this->length;
+	return this->length;
 }
 
 
 std::deque<Node*> Path::getNodes() const
 {
-    return this->nodes;
+	return this->nodes;
 }

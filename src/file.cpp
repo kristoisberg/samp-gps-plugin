@@ -5,58 +5,58 @@
 #include "container.h"
 
 
-namespace File 
+namespace File
 {
-    bool LoadNodes(const std::string& filename, int& line_count, int& node_count, int& connection_count) 
+	bool LoadNodes(const std::string& filename, int& line_count, int& node_count, int& connection_count)
 	{
-        std::ifstream file(filename);
+		std::ifstream file(filename);
 
-        if (!file.good()) 
+		if (!file.good())
 		{
-            return false;
-        }
+			return false;
+		}
 
-        std::string buffer;
-        int type = 0, id = 0, id2 = 0, direction = 0, ignore = 0;
-        float x = 0.0f, y = 0.0f, z = 0.0f;
+		std::string buffer;
+		int type = 0, id = 0, id2 = 0, direction = 0, ignore = 0;
+		float x = 0.0f, y = 0.0f, z = 0.0f;
 
-        while (std::getline(file, buffer)) 
+		while (std::getline(file, buffer))
 		{
-            std::istringstream input(buffer);
+			std::istringstream input(buffer);
 
-            input >> type;
+			input >> type;
 
-            switch (type) 
+			switch (type)
 			{
-                case 0: 
-            	{
-                    input >> x >> y >> z >> ignore >> id;
+			case 0:
+			{
+				input >> x >> y >> z >> ignore >> id;
 
-                    if (Container::AddNode(id, x, y, z)) 
-					{
-                        node_count++;
-                    }
+				if (Container::AddNode(id, x, y, z))
+				{
+					node_count++;
+				}
 
-                    break;
-                }
+				break;
+			}
 
-                case 1: 
-            	{
-                    input >> id >> id2 >> direction;
+			case 1:
+			{
+				input >> id >> id2 >> direction;
 
-                    if (direction != 2 && Container::AddConnection(id, id2)) 
-					{
-                        connection_count++;
-                    }
+				if (direction != 2 && Container::AddConnection(id, id2))
+				{
+					connection_count++;
+				}
 
-                    break;
-                }
-            }
+				break;
+			}
+			}
 
-            line_count++;
-        }
+			line_count++;
+		}
 
-        file.close();
-        return true;
-    }
+		file.close();
+		return true;
+	}
 };

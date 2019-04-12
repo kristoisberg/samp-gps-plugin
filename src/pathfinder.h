@@ -4,9 +4,9 @@
 #include "callback.h"
 
 
-namespace Pathfinder 
+namespace Pathfinder
 {
-    Path* FindPathInternal(Node* start, Node* target);
-    int FindPath(Node* start, Node* target);
-    void FindPathThreaded(Node* start, Node* target, Callback* callback);
+	Path* FindPathInternal(Node* start, Node* target);
+	int FindPath(Node* start, Node* target);
+	void FindPathThreaded(Node* start, Node* target, Callback* callback);
 };

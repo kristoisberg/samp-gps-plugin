@@ -6,27 +6,27 @@ std::unordered_map<AMX*, AMXInfo> amx_list;
 std::mutex amx_list_lock;
 
 
-namespace amx 
+namespace amx
 {
-	void Load(AMX* amx) 
+	void Load(AMX* amx)
 	{
 		amx_list[amx] = AMXInfo();
 	}
 
 
-	void Unload(AMX* amx) 
+	void Unload(AMX* amx)
 	{
 		amx_list.erase(amx);
 	}
 
 
-	void ProcessTick(AMX* amx) 
+	void ProcessTick(AMX* amx)
 	{
-		if (amx_list_lock.try_lock()) 
+		if (amx_list_lock.try_lock())
 		{
 			auto info = &amx_list[amx];
 
-			for (auto callback : info->callback_queue) 
+			for (auto callback : info->callback_queue)
 			{
 				callback->call();
 			}
@@ -37,10 +37,10 @@ namespace amx
 	}
 
 
-	void QueueCallback(AMX* amx, Callback* callback) 
+	void QueueCallback(AMX* amx, Callback* callback)
 	{
 		amx_list_lock.lock();
-        amx_list[amx].callback_queue.push_back(callback);
-        amx_list_lock.unlock();
+		amx_list[amx].callback_queue.push_back(callback);
+		amx_list_lock.unlock();
 	}
 }

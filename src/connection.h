@@ -3,7 +3,7 @@
 #include "common.h"
 
 
-class Connection 
+class Connection
 {
 public:
 	Connection(Node* target, float distance);
@@ -12,6 +12,6 @@ public:
 	float getDistance() const;
 
 private:
-    Node* target;
-    float distance;
+	Node* target;
+	float distance;
 };

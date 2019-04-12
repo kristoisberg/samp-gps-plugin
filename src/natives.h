@@ -3,13 +3,13 @@
 #include "pathfinder.h"
 
 
-enum 
+enum
 {
-    GPS_ERROR_NONE              =  0,
-    GPS_ERROR_INVALID_PARAMS    = -1,
-    GPS_ERROR_INVALID_PATH      = -2,
-    GPS_ERROR_INVALID_NODE      = -3,
-    GPS_ERROR_INTERNAL          = -4
+	GPS_ERROR_NONE = 0,
+	GPS_ERROR_INVALID_PARAMS = -1,
+	GPS_ERROR_INVALID_PATH = -2,
+	GPS_ERROR_INVALID_NODE = -3,
+	GPS_ERROR_INTERNAL = -4
 };
 
 
@@ -22,7 +22,7 @@ enum
 
 
 namespace Natives {
-    cell AMX_NATIVE_CALL IsValidMapNode(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL IsValidMapNode(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetMapNodePos(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetDistanceBetweenMapNodes(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetAngleBetweenMapNodes(AMX* amx, cell* params);

@@ -1,7 +1,7 @@
 ﻿#include "connection.h"
 
 
-Connection::Connection(Node* target, const float distance) 
+Connection::Connection(Node* target, const float distance)
 {
 	this->target = target;
 	this->distance = distance;

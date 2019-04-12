@@ -8,7 +8,7 @@
 #define INVALID_PATH_ID -1
 
 
-typedef void (*logprintf_t)(const char* format, ...);
+typedef void(*logprintf_t)(const char* format, ...);
 extern logprintf_t logprintf;
 extern void *pAMXFunctions;
 

@@ -13,7 +13,7 @@ namespace Container
 		int highest_path_id;
 	}
 
-	
+
 	bool AddNode(const int id, const float x, const float y, const float z)
 	{
 		if (GetNodeByID(id) != nullptr)
