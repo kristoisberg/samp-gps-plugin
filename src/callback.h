@@ -7,11 +7,12 @@
 #include "common.h"
 
 
-class Callback {
+class Callback 
+{
 public:
-    Callback(AMX* amx, std::string function, const char* format, cell* params, unsigned int param_offset);
-    void setResult(int result);
-    AMX* getAMX();
+    Callback(AMX* amx, const std::string& function, const char* format, cell* params, unsigned int param_offset);
+    void setResult(int value);
+    AMX* getAMX() const;
     bool call();
 
 private:

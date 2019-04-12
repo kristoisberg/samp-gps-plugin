@@ -1,11 +1,10 @@
 #pragma once
 
-#include <iostream>
-
 #include "pathfinder.h"
 
 
-enum {
+enum 
+{
     GPS_ERROR_NONE              =  0,
     GPS_ERROR_INVALID_PARAMS    = -1,
     GPS_ERROR_INVALID_PATH      = -2,
@@ -15,7 +14,8 @@ enum {
 
 
 #define CHECK_PARAMS(n) \
-	if (params[0] != (n * 4)) { \
+	if (params[0] != (n * 4)) \
+	{ \
 		std::cout << __func__ << ": Expecting " << n << "parameter(s), but found " << (params[0] / sizeof(cell)) << ".\n"; \
 		return GPS_ERROR_INVALID_PARAMS; \
 	}

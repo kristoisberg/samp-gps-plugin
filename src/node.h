@@ -1,35 +1,35 @@
 #pragma once
 
 #include <vector>
-
 #include "common.h"
 
 
-class Node {
+class Node 
+{
 public:
     Node(int id, float x, float y, float z);
 
     void addConnection(Connection* connection);
-    std::vector<Connection*> getConnections();
+    std::vector<Connection*> getConnections() const;
 
-    int getID();
+    int getID() const;
 
-    float getX();
-    float getY();
-    float getZ();
+    float getX() const;
+    float getY() const;
+    float getZ() const;
 
-    float getDistanceFromPoint(float x, float y, float z);
-    float getDistanceFromNode(Node* other);
+    float getDistanceFromPoint(float pointX, float pointY, float pointZ) const;
+    float getDistanceFromNode(Node* other) const;
 
-    float getAngleFromPoint(float x, float y);
-    float getAngleFromNode(Node* other);
+    float getAngleFromPoint(float pointX, float pointY) const;
+    float getAngleFromNode(Node* other) const;
 
 private:
-    int id = 0;
+    int id;
     
-    float x = 0.0f;
-    float y = 0.0f;
-    float z = 0.0f;
+    float x;
+    float y;
+    float z;
 
     std::vector<Connection*> connections;
 };

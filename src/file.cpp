@@ -2,14 +2,17 @@
 #include <sstream>
 
 #include "file.h"
-#include "pathfinder.h"
+#include "container.h"
 
 
-namespace File {
-    bool LoadNodes(std::string filename, int& line_count, int& node_count, int& connection_count) {
+namespace File 
+{
+    bool LoadNodes(const std::string& filename, int& line_count, int& node_count, int& connection_count) 
+	{
         std::ifstream file(filename);
 
-        if (!file.good()) {
+        if (!file.good()) 
+		{
             return false;
         }
 
@@ -17,26 +20,32 @@ namespace File {
         int type = 0, id = 0, id2 = 0, direction = 0, ignore = 0;
         float x = 0.0f, y = 0.0f, z = 0.0f;
 
-        while (std::getline(file, buffer)) {
+        while (std::getline(file, buffer)) 
+		{
             std::istringstream input(buffer);
 
             input >> type;
 
-            switch (type) {
-                case 0: {
+            switch (type) 
+			{
+                case 0: 
+            	{
                     input >> x >> y >> z >> ignore >> id;
 
-                    if (Pathfinder::AddNode(id, x, y, z)) {
+                    if (Container::AddNode(id, x, y, z)) 
+					{
                         node_count++;
                     }
 
                     break;
                 }
 
-                case 1: {
+                case 1: 
+            	{
                     input >> id >> id2 >> direction;
 
-                    if (direction != 2 && Pathfinder::AddConnection(id, id2)) {
+                    if (direction != 2 && Container::AddConnection(id, id2)) 
+					{
                         connection_count++;
                     }
 

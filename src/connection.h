@@ -1,9 +1,17 @@
 #pragma once
 
-#include "node.h"
+#include "common.h"
 
 
-struct Connection {
+class Connection 
+{
+public:
+	Connection(Node* target, float distance);
+
+	Node* getTarget() const;
+	float getDistance() const;
+
+private:
     Node* target;
-    float distance = 0.0f;
+    float distance;
 };

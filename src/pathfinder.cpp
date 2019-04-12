@@ -1,153 +1,109 @@
 #include <cmath>
-#include <set>
 #include <queue>
-#include <iostream>
 #include <exception>
+#include <functional>
 
 #include "pathfinder.h"
+#include "connection.h"
 #include "amx.h"
  
 
-namespace Pathfinder {
+namespace Pathfinder 
+{
     float infinity = std::numeric_limits<float>::infinity();
 
-    struct VisitedNode {
+    struct VisitedNode 
+	{
         Node* node;
         VisitedNode* previous;
         float distance = infinity;
         float target_distance = infinity;
         float total_distance = infinity;
-
-        friend bool operator<(const VisitedNode& lhs, const VisitedNode& rhs) {
-            return lhs.total_distance < rhs.total_distance;
-        };
     };
 
-    struct NodeComparison {
-        bool operator() (const VisitedNode* lhs, const VisitedNode* rhs) const {
-            return lhs->total_distance > rhs->total_distance;
-        }
-    };
 
-    std::unordered_map<int, Node*> nodes;
-    int highest_node_id = -1;
-
-    std::unordered_map<int, Path*> paths;
-    int path_count = 0;
+	bool NodeComparator(const VisitedNode* lhs, const VisitedNode* rhs)
+	{
+		return lhs->total_distance > rhs->total_distance;
+	}
 
 
-    struct PathNotFoundException : public std::exception {
-        const char* what() const throw() {
+    struct PathNotFoundException : std::exception 
+	{
+        const char* what() const noexcept override
+        {
             return "Failed to find a path!";
         }
     };
 
 
-    bool AddNode(int id, float x, float y, float z) {
-        if (GetNodeByID(id) != nullptr) {
-            return false;
-        }
-
-        nodes[id] = new Node(id, x, y, z);
-
-        if (id > highest_node_id) {
-            highest_node_id = id;
-        }
-
-        return true;
-    } 
-
-
-    bool AddConnection(int startid, int targetid) {
-        Node* start = GetNodeByID(startid);
-
-        if (start == nullptr) {
-            return false;
-        }
-
-        Node* target = GetNodeByID(targetid);
-
-        if (target == nullptr) {
-            return false;
-        }
-
-        start->addConnection(new Connection{target, start->getDistanceFromNode(target)});
-
-        return true;
-    }
-
-
-    Node* GetNodeByID(int id) {
-        auto node = nodes.find(id);
-
-        if (node != nodes.end()) {
-            return node->second;
-        } else {
-            return nullptr;
-        }
-    }
-
-
-    Path* FindPathInternal(Node* start, Node* target) {
-        if (start == target) {
-            Path* result = new Path(0.0f);
+    Path* FindPathInternal(Node* start, Node* target) 
+	{
+        if (start == target) 
+		{
+            auto result = new Path(0.0f);
             result->addNodeToEnd(start);
             return result;
         }
 
-        std::priority_queue<VisitedNode*, std::vector<VisitedNode*>, NodeComparison> queue;
-        std::vector<VisitedNode> existing_paths(highest_node_id + 1);
-        VisitedNode* path = nullptr; 
-        VisitedNode* next_path = nullptr;
+        std::priority_queue<VisitedNode*, std::vector<VisitedNode*>, std::function<bool(VisitedNode*, VisitedNode*)>> queue(NodeComparator);
+        std::vector<VisitedNode> existing_paths(Container::GetHighestNodeID() + 1);
         VisitedNode* solution = nullptr;
-        float distance = 0.0f;
 
-        path = &existing_paths.at(start->getID());
-        path->distance = 0.0f;
-        path->total_distance = path->target_distance = start->getDistanceFromNode(target);
-        path->previous = nullptr;
-        path->node = start;
-        
-        queue.push(path);
+		const auto first_node = &existing_paths.at(start->getID());
+		first_node->distance = 0.0f;
+		first_node->total_distance = first_node->target_distance = start->getDistanceFromNode(target);
+		first_node->previous = nullptr;
+		first_node->node = start;
+        queue.push(first_node);
 
-        while (!queue.empty()) {
-            path = queue.top();
+        while (!queue.empty()) 
+		{
+			const auto current_node = queue.top();
             queue.pop();
 
-            if (solution != nullptr && *solution < *path) {
+            if (solution != nullptr && NodeComparator(current_node, solution))
+			{
                 break;
             }
 
-            for (Connection* connection : path->node->getConnections()) {
-                next_path = &existing_paths.at(connection->target->getID());
-                distance = path->distance + connection->distance;
+            for (auto connection : current_node->node->getConnections())
+			{
+				const auto connection_target = connection->getTarget();
+                auto next_node = &existing_paths.at(connection_target->getID());
+				const auto distance = current_node->distance + connection->getDistance();
 
-                if (next_path->distance > distance) {
-                    if (next_path->distance == infinity) {
-                        next_path->node = connection->target;
-                        next_path->target_distance = target->getDistanceFromNode(connection->target);
+                if (next_node->distance > distance)
+				{
+                    if (next_node->distance == infinity)
+					{
+						next_node->node = connection_target;
+						next_node->target_distance = target->getDistanceFromNode(connection_target);
 
-                        if (connection->target == target) {
-                            solution = next_path;
+                        if (connection_target == target)
+						{
+                            solution = next_node;
                         }
                     }
 
-                    next_path->distance = distance;
-                    next_path->previous = path;
-                    next_path->total_distance = next_path->target_distance + distance;
+					next_node->distance = distance;
+					next_node->previous = current_node;
+					next_node->total_distance = next_node->target_distance + distance;
                     
-                    queue.push(next_path);
+                    queue.push(next_node);
                 }
             }
         }
 
-        if (solution == nullptr) {
+        if (solution == nullptr) 
+		{
             throw PathNotFoundException();
         }
 
-        Path* result = new Path(solution->distance);
+        auto result = new Path(solution->distance);
 
-        while (solution != nullptr) {
+        while (solution != nullptr) 
+		{
             result->addNodeToStart(solution->node);
             solution = solution->previous;
         }
@@ -156,42 +112,30 @@ namespace Pathfinder {
     }
 
 
-    int FindPath(Node* start, Node* target) {
-        try {
-            Path* path = FindPathInternal(start, target);
-
-            int id = path_count++;
-            paths[id] = path;
-            return id;
-        } catch (PathNotFoundException e) {
+    int FindPath(Node* start, Node* target) 
+	{
+        try 
+		{
+            return Container::AddPath(FindPathInternal(start, target));
+        } 
+    	catch (const PathNotFoundException &e) 
+		{
             return INVALID_PATH_ID;
         }
     }
 
 
-    void FindPathThreaded(Node* start, Node* target, Callback* callback) {
-        try {
-            Path* path = FindPathInternal(start, target);
-
-            int id = path_count++;
-            paths[id] = path;
-
-            callback->setResult(id);
-            amx::QueueCallback(callback->getAMX(), callback);
-        } catch (PathNotFoundException e) {
+    void FindPathThreaded(Node* start, Node* target, Callback* callback) 
+	{
+        try 
+		{
+            callback->setResult(Container::AddPath(FindPathInternal(start, target)));
+        } 
+    	catch (const PathNotFoundException &e) 
+		{
             callback->setResult(INVALID_PATH_ID);
-            amx::QueueCallback(callback->getAMX(), callback);
-        }    
-    }
-
-
-    Path* GetPathByID(int id) {
-        auto path = paths.find(id);
-
-        if (path != paths.end()) {
-            return path->second;
-        } else {
-            return nullptr;
         }
+
+		amx::QueueCallback(callback->getAMX(), callback);
     }
 };

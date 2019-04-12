@@ -8,11 +8,11 @@
 #define _gps_included
 
 
-#define INVALID_MAP_NODE_ID MapNode:-1
-#define INVALID_PATH_ID     Path:-1
+const MapNode:INVALID_MAP_NODE_ID = MapNode:-1;
+const Path:INVALID_PATH_ID = Path:-1;
 
-
-enum _:GPS_ERROR {
+enum _:GPS_ERROR 
+{
     GPS_ERROR_NONE              =  0,
     GPS_ERROR_INVALID_PARAMS    = -1,
     GPS_ERROR_INVALID_PATH      = -2,
@@ -32,10 +32,8 @@ native GetMapNodeConnectionCount(MapNode:nodeid, &count);
 native GetHighestMapNodeID();
 native GetRandomMapNode(&MapNode:nodeid);
 
-
 native FindPath(MapNode:start, MapNode:target, &Path:pathid);
 native FindPathThreaded(MapNode:start, MapNode:target, const callback[], const format[] = "", {Float, _}:...);
-
 
 native bool:IsValidPath(Path:pathid);
 native GetPathSize(Path:pathid, &size);
@@ -46,19 +44,21 @@ native DestroyPath(Path:pathid);
 
 
 #if defined _PawnPlus_included
-    stock Task:FindPathAsync(MapNode:start, MapNode:target) {
+    stock Task:FindPathAsync(MapNode:start, MapNode:target) 
+    {
         new Task:task = task_new();
 
-        if (FindPathThreaded(start, target, "FindPathAsyncResponse", "i", _:task) != GPS_ERROR_NONE) {
+        if (FindPathThreaded(start, target, "FindPathAsyncResponse", "i", _:task) != GPS_ERROR_NONE) 
+        {
             task_set_error_ticks(task, amx_err_exit, 0);
         }
 
         return task;
     }
 
-
     forward public FindPathAsyncResponse(Path:path, Task:task);
-    public FindPathAsyncResponse(Path:path, Task:task) {
+    public FindPathAsyncResponse(Path:path, Task:task) 
+    {
         task_set_result(task, _:path);
     }
 #endif
