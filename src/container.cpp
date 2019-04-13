@@ -163,7 +163,7 @@ namespace Container
 			delete connection;
 		}
 
-		Connection* Find(int id)
+		Connection* Find(const int id)
 		{
 			const auto connection = connections.find(id);
 
