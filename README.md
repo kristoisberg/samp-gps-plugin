@@ -2,7 +2,7 @@
 
 [![sampctl](https://shields.southcla.ws/badge/sampctl-samp--gps--plugin-2f2f2f.svg?style=for-the-badge)](https://github.com/kristoisberg/samp-gps-plugin)
 
-This plugin offers a way of accessing the data of San Andreas map nodes and finding paths between them. It is intended to be a modern and straightforward replacement for RouteConnector. The plugin uses a simple implementation of the A* algorithm for pathfinding. Finding a path from the top-leftmost node on the map to the bottom-rightmost node that consists of 684 nodes takes just a few milliseconds. It is worth noting that this is my first successful project in C++ and the last time I tried writing something in C++ was over half a year ago so there is a lot of room for improvement and I am planning to continue improving the code of this plugin as I progress.
+This plugin offers a way of accessing and manipulating the data of San Andreas map nodes and finding paths between them. It is intended to be a modern and straightforward replacement for RouteConnector. The plugin uses a simple implementation of the A* algorithm for pathfinding. Finding a path from the top-leftmost node on the map to the bottom-rightmost node that consists of 684 nodes takes just a few milliseconds. It is worth noting that this is my first successful project in C++ and the last time I tried writing something in C++ was over half a year ago so there is a lot of room for improvement and I am planning to continue improving the code of this plugin as I progress.
 
 
 ### Advantages over RouteConnector
@@ -11,11 +11,6 @@ This plugin offers a way of accessing the data of San Andreas map nodes and find
 * **Compatibility** - RouteConnector has a compatibility issue with some part of YSI that makes it call a wrong public function instead of the actual `GPS_WhenRouteIsCalculated` callback. This plugin lets you call a custom callback and pass arguments to it. In addition to that, RouteConnector uses Intel Threading Building Blocks for threading that has caused numerous compatibility (and PEBCAK) issues on Linux servers. This plugin uses `std::thread` for threading and does not have any dependencies. This plugin is also compatible with PawnPlus and supports asynchronous pathfinding out of box.
 * **Active development** - RouteConnector has not been updated for over three years. As I said previously, I am planning to continue active development of this plugin for a long period of time.
 * **Performance** - I have not done any benchmarks, but even with older versions users claimed that this plugin is multiple times faster than RouteConnector. A fix in the algorithm in version 1.2.0 made it around 30 times faster than it previously was.
-
-
-### Disadvantages over RouteConnector
-
-* **Functionality** - At the current time, this plugin only replaces RouteConnector in the areas of accessing map node data and pathfinding. There is no way of managing nodes or their connections in runtime or modifying the `GPS.dat` file, however these features will be added in future versions.
 
 
 ## Installation
@@ -38,6 +33,14 @@ Include in your code and begin using the library:
 
 ### Functions
 
+`CreateMapNode(Float:x, Float:y, Float:z, &MapNode:nodeid)`
+
+* Adds a node to the map and passes the ID of it to `nodeid`.
+
+`DestroyMapNode(MapNode:nodeid)`
+
+* If the specified map node is valid, returns `GPS_ERROR_NONE` and tries to destroy it, otherwise returns `GPS_ERROR_INVALID_NODE`. If the node is not a part of any path, it gets destroyed immediately, otherwise it will be destroyed once all paths containing it are destroyed, until that it will be excluded from pathfinding and several other features.
+
 `bool:IsValidMapNode(MapNode:nodeid)`
 
 * Returns if the map node with the specified ID is valid.
@@ -45,6 +48,34 @@ Include in your code and begin using the library:
 `GetMapNodePos(MapNode:nodeid, &Float:x, &Float:y, &Float:z)`
 
 * If the specified map node is valid, returns `GPS_ERROR_NONE` and passes the position of it to `x`, `y` and `z`, otherwise returns `GPS_ERROR_INVALID_NODE`.
+
+`CreateConnection(MapNode:source, MapNode:target, &Connection:connectionid)`
+
+* If both specified map nodes are valid, returns `GPS_ERROR_NONE`, creates a connection from `source` to `target` and passes the ID of it to `connectionid`, otherwise returns `GPS_ERROR_INVALID_NODE`.
+
+`DestroyConnection(Connection:connectionid)`
+
+* If the specified connection is valid, returns `GPS_ERROR_NONE` and destroys it, otherwise returns `GPS_ERROR_INVALID_CONNECTION`.
+
+`GetConnectionSource(Connection:connectionid, &MapNode:nodeid)`
+
+* If the specified connection is valid, returns `GPS_ERROR_NONE` and passes the ID of the source node of it to `nodeid`, otherwise returns `GPS_ERROR_INVALID_CONNECTION`.
+
+`GetConnectionTarget(Connection:connectionid, &MapNode:nodeid)`
+
+* If the specified connection is valid, returns `GPS_ERROR_NONE` and passes the ID of the target node of it to `nodeid`, otherwise returns `GPS_ERROR_INVALID_CONNECTION`.
+
+`GetMapNodeConnectionCount(MapNode:nodeid, &count)`
+
+* If the specified map node is valid, returns `GPS_ERROR_NONE` and passes the amount of its connections to `count`, otherwise returns `GPS_ERROR_INVALID_NODE`. If `count` is larger than 2, the node is an intersection.
+
+`GetMapNodeConnection(MapNode:nodeid, index, &Connection:connectionid)`
+
+* If the specified map node is valid and it has a connection with the specified index, returns `GPS_ERROR_NONE` and passes the ID of the connection to `connectionid`, otherwise returns `GPS_ERROR_INVALID_NODE` or `GPS_ERROR_INVALID_CONNECTION` depending on the error.
+
+`GetConnectionBetweenMapNodes(MapNode:source, MapNode:target, &Connection:connectionid)`
+
+* If both specified map nodes are valid, tries to find a connection from `source` to `target`. If a connection is found, returns `GPS_ERROR_NONE` and passes the ID of the connection to `connectionid`, otherwise returns `GPS_ERROR_INVALID_CONNECTION`. If either of the specified map nodes is invalid, returns `GPS_ERROR_INVALID_NODE`.
 
 `GetDistanceBetweenMapNodes(MapNode:first, MapNode:second, &Float:distance)`
 
@@ -66,10 +97,6 @@ Include in your code and begin using the library:
 
 * Passes the ID of the closest map node to the specified position to `nodeid`. If `ignorednode` is specified and it is the closest node to the position, it is ignored and the ID of the next closest node is passed to `nodeid` instead. Returns `GPS_ERROR_INVALID_NODE` if no nodes exist, otherwise returns `GPS_ERROR_NONE`.
 
-`GetMapNodeConnectionCount(MapNode:nodeid, &count)`
-
-* If the specified map node is valid, returns `GPS_ERROR_NONE` and passes the amount of its connections to `count`, otherwise returns `GPS_ERROR_INVALID_NODE`. If `count` is larger than 2, the node is an intersection.
-
 `GetHighestMapNodeID()`
 
 * Returns the ID of the map node with the highest ID. Could be used for iteration purposes.
@@ -78,15 +105,19 @@ Include in your code and begin using the library:
 
 * Passes the ID of a random map node, found using Mersenne Twister, to `nodeid`. Returns `GPS_ERROR_INVALID_NODE` if no map nodes exist, otherwise returns `GPS_ERROR_NONE`.
 
-`FindPath(MapNode:start, MapNode:target, &Path:pathid)`
+`SaveMapNodesToFile(const filename[])`
 
-* If both of the specified map nodes are valid, returns `GPS_ERROR_NONE` and tries to find a path from `start` to `target` and pass its ID to `pathid`, otherwise returns `GPS_ERROR_INVALID_NODE`. If pathfinding fails, returns `GPS_ERROR_INVALID_PATH`.
+* Saves all existing nodes and their connections to a file with the specified name.
 
-`FindPathThreaded(MapNode:start, MapNode:target, const callback[], const format[] = "", {Float, _}:...)`
+`FindPath(MapNode:source, MapNode:target, &Path:pathid)`
 
-* If both of the specified map nodes are valid, returns `GPS_ERROR_NONE` and tries to find a path from `start` to `target`. After pathfinding is finished, calls the specified callback and passes the path ID (could be `INVALID_PATH_ID` if pathfinding fails) and the specified arguments to it.
+* If both of the specified map nodes are valid, returns `GPS_ERROR_NONE` and tries to find a path from `source` to `target` and pass its ID to `pathid`, otherwise returns `GPS_ERROR_INVALID_NODE`. If pathfinding fails, returns `GPS_ERROR_INVALID_PATH`.
 
-`Task:FindPathAsync(MapNode:start, MapNode:target)`
+`FindPathThreaded(MapNode:source, MapNode:target, const callback[], const format[] = "", {Float, _}:...)`
+
+* If both of the specified map nodes are valid, returns `GPS_ERROR_NONE` and tries to find a path from `source` to `target`. After pathfinding is finished, calls the specified callback and passes the path ID (could be `INVALID_PATH_ID` if pathfinding fails) and the specified arguments to it.
+
+`Task:FindPathAsync(MapNode:source, MapNode:target)`
 
 * Pauses the current function and continues it after it is finished. Throws an AMX error if pathfinding fails for any reason. Only available if PawnPlus is included before GPS. Usage explained below.
 
@@ -121,6 +152,7 @@ Include in your code and begin using the library:
 * `GPS_ERROR_INVALID_PARAMS` - An invalid amount of arguments was passed to the function. Should never happen without the PAWN compiler noticing it unless the versions of the plugin and include are different.
 * `GPS_ERROR_INVALID_PATH` - An invalid path ID as passed to the function or threaded pathfinding was not successful.
 * `GPS_ERROR_INVALID_NODE` - An invalid map node ID/index was passed to the function or `GetClosestMapNodeToPoint` or `GetRandomMapNode` failed because no map nodes exist.
+* `GPS_ERROR_INVALID_CONNECTION` - An invalid connection ID/index was passed to the function.
 * `GPS_ERROR_INTERNAL` - An internal error happened - threaded pathfinding failed because dispatching a thread failed.
 
 
@@ -239,4 +271,4 @@ sampctl package run
 * kvann - Creator of the plugin.
 * Gamer_Z - Creator of the original RouteConnector plugin which helped me understand the structure of GPS.dat and influenced this plugin a lot, the author of the original `GPS.dat`.
 * NaS - Author of the fixed `GPS.dat` distributed with the plugin.
-* Southclaws, IllidanS4 - Helped me with the plugin in major ways (there were other helpful people as well, I appreciate it all).
+* Southclaws, IllidanS4, Hual - Helped me with the plugin in major ways (there were other helpful people as well, I appreciate it all).
