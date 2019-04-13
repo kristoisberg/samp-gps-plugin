@@ -51,7 +51,7 @@ Include in your code and begin using the library:
 
 `CreateConnection(MapNode:source, MapNode:target, &Connection:connectionid)`
 
-* If both specified map nodes are valid, returns `GPS_ERROR_NONE`, creates a connection from `source` to `target` and passes the ID of it to `connectionid`, otherwise returns `GPS_ERROR_INVALID_NODE`.
+* If both specified map nodes are valid, returns `GPS_ERROR_NONE`, creates a connection from `source` to `target` and passes the ID of it to `connectionid`, otherwise returns `GPS_ERROR_INVALID_NODE`. **Note:** Connections are not double-sided may need to be added in both directions separately.
 
 `DestroyConnection(Connection:connectionid)`
 
