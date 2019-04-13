@@ -60,27 +60,29 @@ void Node::addToPath(Path* path, int index)
 
 int Node::getPositionInPath(Path* path)
 {
+	this->pathsLock.lock();
+
 	const auto it = std::find_if(this->paths.begin(), this->paths.end(), [&path](const std::pair<Path*, int>& pair) { return pair.first == path; });
+	const auto result = (it == this->paths.end()) ? -1 : it->second;
 
-	if (it != this->paths.end())
-	{
-		return it->second;
-	}
+	this->pathsLock.unlock();
 
-	return -1;
+	return result;
 }
 
 
 void Node::removeFromPath(Path* path)
 {
+	this->pathsLock.lock();
+
 	const auto it = std::find_if(this->paths.begin(), this->paths.end(), [&path](const std::pair<Path*, int>& pair) { return pair.first == path; });
 
 	if (it != this->paths.end())
 	{
-		this->pathsLock.lock();
 		this->paths.erase(it);
-		this->pathsLock.unlock();
 	}
+
+	this->pathsLock.unlock();
 }
 
 
