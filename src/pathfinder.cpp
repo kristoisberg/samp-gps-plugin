@@ -47,7 +47,7 @@ namespace Pathfinder
 		}
 
 		std::priority_queue<VisitedNode*, std::vector<VisitedNode*>, std::function<bool(VisitedNode*, VisitedNode*)>> queue(NodeComparator);
-		std::vector<VisitedNode> existing_paths(Container::GetHighestNodeID() + 1);
+		std::vector<VisitedNode> existing_paths(Container::Nodes::GetHighestID() + 1);
 		VisitedNode* solution = nullptr;
 
 		const auto first_node = &existing_paths.at(start->getID());
@@ -67,11 +67,11 @@ namespace Pathfinder
 				break;
 			}
 
-			for (auto connection : current_node->node->getOutgoingConnections())
+			for (auto connection : current_node->node->getConnections())
 			{
 				const auto connection_target = connection->getTarget();
 
-				if (connection_target->isSetForDeletion())
+				if (connection_target == current_node->node || connection_target->isSetForDeletion())
 				{
 					continue;
 				}
@@ -129,7 +129,7 @@ namespace Pathfinder
 	{
 		try
 		{
-			return Container::AddPath(FindPathInternal(start, target));
+			return Container::Paths::Add(FindPathInternal(start, target));
 		}
 		catch (const PathNotFoundException &e)
 		{
@@ -144,7 +144,7 @@ namespace Pathfinder
 
 		try
 		{
-			callback->setResult(Container::AddPath(FindPathInternal(start, target)));
+			callback->setResult(Container::Paths::Add(FindPathInternal(start, target)));
 		}
 		catch (const PathNotFoundException &e)
 		{

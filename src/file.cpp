@@ -34,7 +34,7 @@ namespace File
 			{
 				input >> x >> y >> z >> ignore >> id;
 
-				if (Container::AddNode(id, x, y, z))
+				if (Container::Nodes::Add(id, x, y, z))
 				{
 					node_count++;
 				}
@@ -46,7 +46,7 @@ namespace File
 			{
 				input >> id >> id2 >> direction;
 
-				if (direction != 2 && Container::AddConnection(id, id2))
+				if (direction != 2 && Container::Connections::Add(id, id2))
 				{
 					connection_count++;
 				}

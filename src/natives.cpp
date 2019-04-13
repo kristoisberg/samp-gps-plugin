@@ -6,6 +6,7 @@
 
 #include "natives.h"
 #include "callback.h"
+#include "connection.h"
 #include "node.h"
 #include "path.h"
 
@@ -15,41 +16,54 @@ namespace Natives
 	std::mt19937 mersenne{ std::random_device{}() };
 
 
+	cell AMX_NATIVE_CALL CreateMapNode(AMX* amx, cell* params)
+	{
+		CHECK_PARAMS(4);
+
+		const auto x = amx_ctof(params[1]), y = amx_ctof(params[2]), z = amx_ctof(params[3]);
+		
+		Container::LockExclusive();
+
+		const auto id = Container::Nodes::AllocateID();
+
+		Container::Nodes::Add(id, x, y, z);
+		Container::UnlockExclusive();
+
+		cell* address = nullptr;
+		amx_GetAddr(amx, params[4], &address);
+		*address = id;
+
+		return GPS_ERROR_NONE;
+	}
+
+
+	cell AMX_NATIVE_CALL DestroyMapNode(AMX* amx, cell* params)
+	{
+		CHECK_PARAMS(1);
+
+		const auto id = static_cast<int>(params[1]);
+		const auto node = Container::Nodes::Find(id);
+
+		if (node == nullptr)
+		{
+			return GPS_ERROR_INVALID_NODE;
+		}
+
+		Container::LockExclusive();
+		Container::Nodes::SetForDeletion(node);
+		Container::UnlockExclusive();
+
+		return GPS_ERROR_NONE;
+	}
+
+
 	cell AMX_NATIVE_CALL IsValidMapNode(AMX* amx, cell* params)
 	{
 		CHECK_PARAMS(1);
 
 		const auto id = static_cast<int>(params[1]);
 
-		return Container::GetNodeByID(id) != nullptr;
-	}
-
-
-	cell AMX_NATIVE_CALL GetHighestMapNodeID(AMX* amx, cell* params)
-	{
-		return Container::GetHighestNodeID();
-	}
-
-
-	cell AMX_NATIVE_CALL GetRandomMapNode(AMX* amx, cell* params)
-	{
-		CHECK_PARAMS(1);
-
-		auto nodes = Container::GetNodes();
-
-		if (nodes.empty())
-		{
-			return GPS_ERROR_INVALID_NODE;
-		}
-
-		std::vector<std::pair<int, Node*>> result;
-		std::sample(nodes.begin(), nodes.end(), std::back_inserter(result), 1, mersenne);
-
-		cell* address = nullptr;
-		amx_GetAddr(amx, params[1], &address);
-		*address = result.at(0).second->getID();
-
-		return GPS_ERROR_NONE;
+		return Container::Nodes::Find(id) != nullptr;
 	}
 
 
@@ -58,7 +72,7 @@ namespace Natives
 		CHECK_PARAMS(4);
 
 		const auto id = static_cast<int>(params[1]);
-		const auto node = Container::GetNodeByID(id);
+		const auto node = Container::Nodes::Find(id);
 
 		if (node == nullptr)
 		{
@@ -82,12 +96,125 @@ namespace Natives
 	}
 
 
+	cell AMX_NATIVE_CALL CreateConnection(AMX* amx, cell* params)
+	{
+		CHECK_PARAMS(3);
+
+		const auto source_id = static_cast<int>(params[1]), target_id = static_cast<int>(params[2]);
+
+		Container::LockExclusive();
+
+		const auto id = Container::Connections::Add(source_id, target_id);
+
+		Container::UnlockExclusive();
+
+		if (id == -1)
+		{
+			return GPS_ERROR_INVALID_NODE;
+		}
+
+		cell* address = nullptr;
+		amx_GetAddr(amx, params[3], &address);
+		*address = id;
+
+		return GPS_ERROR_NONE;
+	}
+
+
+	cell AMX_NATIVE_CALL DestroyConnection(AMX* amx, cell* params)
+	{
+		CHECK_PARAMS(1);
+
+		const auto id = static_cast<int>(params[1]);
+		const auto connection = Container::Connections::Find(id);
+
+		if (connection == nullptr)
+		{
+			return GPS_ERROR_INVALID_CONNECTION;
+		}
+
+		Container::LockExclusive();
+		Container::Connections::Delete(connection);
+		Container::UnlockExclusive();
+
+		return GPS_ERROR_NONE;
+	}
+
+
+	cell AMX_NATIVE_CALL GetConnectionSource(AMX* amx, cell* params)
+	{
+		CHECK_PARAMS(2);
+
+		const auto id = static_cast<int>(params[1]);
+		const auto connection = Container::Connections::Find(id);
+
+		if (connection == nullptr)
+		{
+			return GPS_ERROR_INVALID_CONNECTION;
+		}
+
+		cell* address = nullptr;
+		amx_GetAddr(amx, params[2], &address);
+		*address = connection->getSource()->getID();
+
+		return GPS_ERROR_NONE;
+	}
+
+
+	cell AMX_NATIVE_CALL GetConnectionTarget(AMX* amx, cell* params)
+	{
+		CHECK_PARAMS(2);
+
+		const auto id = static_cast<int>(params[1]);
+		const auto connection = Container::Connections::Find(id);
+
+		if (connection == nullptr)
+		{
+			return GPS_ERROR_INVALID_CONNECTION;
+		}
+
+		cell* address = nullptr;
+		amx_GetAddr(amx, params[2], &address);
+		*address = connection->getTarget()->getID();
+
+		return GPS_ERROR_NONE;
+	}
+
+
+	cell AMX_NATIVE_CALL GetHighestMapNodeID(AMX* amx, cell* params)
+	{
+		return Container::Nodes::GetHighestID();
+	}
+
+
+	cell AMX_NATIVE_CALL GetRandomMapNode(AMX* amx, cell* params)
+	{
+		CHECK_PARAMS(1);
+
+		auto nodes = Container::Nodes::GetAll();
+
+		if (nodes.empty())
+		{
+			return GPS_ERROR_INVALID_NODE;
+		}
+
+		std::vector<std::pair<int, Node*>> result;
+		std::sample(nodes.begin(), nodes.end(), std::back_inserter(result), 1, mersenne);
+
+		cell* address = nullptr;
+		amx_GetAddr(amx, params[1], &address);
+		*address = result.at(0).second->getID();
+
+		return GPS_ERROR_NONE;
+	}
+
+
 	cell AMX_NATIVE_CALL GetMapNodeConnectionCount(AMX* amx, cell* params)
 	{
 		CHECK_PARAMS(2);
 
 		const auto id = static_cast<int>(params[1]);
-		const auto node = Container::GetNodeByID(id);
+		const auto node = Container::Nodes::Find(id);
 
 		if (node == nullptr)
 		{
@@ -96,9 +223,73 @@ namespace Natives
 
 		cell* address = nullptr;
 		amx_GetAddr(amx, params[2], &address);
-		*address = node->getOutgoingConnections().size();
+		*address = node->getConnections().size();
 
 		return GPS_ERROR_NONE;
+	}
+
+
+	cell AMX_NATIVE_CALL GetMapNodeConnection(AMX* amx, cell* params)
+	{
+		CHECK_PARAMS(3);
+
+		const auto id = static_cast<int>(params[1]);
+		const auto node = Container::Nodes::Find(id);
+
+		if (node == nullptr)
+		{
+			return GPS_ERROR_INVALID_NODE;
+		}
+
+		const auto index = static_cast<unsigned int>(params[2]);
+		const auto connections = node->getConnections();
+
+		if (connections.size() <= index)
+		{
+			return GPS_ERROR_INVALID_CONNECTION;
+		}
+
+		cell* address = nullptr;
+		amx_GetAddr(amx, params[3], &address);
+		*address = connections.at(index)->getId();
+
+		return GPS_ERROR_NONE;
+	}
+
+
+	cell AMX_NATIVE_CALL GetConnectionBetweenMapNodes(AMX* amx, cell* params)
+	{
+		CHECK_PARAMS(3);
+
+		const auto source_id = static_cast<int>(params[1]);
+		const auto source = Container::Nodes::Find(source_id);
+
+		if (source == nullptr)
+		{
+			return GPS_ERROR_INVALID_NODE;
+		}
+		
+		const auto target_id = static_cast<int>(params[2]);
+		const auto target = Container::Nodes::Find(target_id);
+
+		if (target == nullptr)
+		{
+			return GPS_ERROR_INVALID_NODE;
+		}
+
+		for (const auto connection : source->getConnections())
+		{
+			if (connection->getTarget() == target)
+			{
+				cell* address = nullptr;
+				amx_GetAddr(amx, params[3], &address);
+				*address = connection->getId();
+
+				return GPS_ERROR_NONE;
+			}
+		}
+
+		return GPS_ERROR_INVALID_NODE;
 	}
 
 
@@ -107,7 +298,7 @@ namespace Natives
 		CHECK_PARAMS(3);
 
 		const auto first_id = static_cast<int>(params[1]);
-		const auto first = Container::GetNodeByID(first_id);
+		const auto first = Container::Nodes::Find(first_id);
 
 		if (first == nullptr)
 		{
@@ -115,7 +306,7 @@ namespace Natives
 		}
 
 		const auto second_id = static_cast<int>(params[2]);
-		const auto second = Container::GetNodeByID(second_id);
+		const auto second = Container::Nodes::Find(second_id);
 
 		if (second == nullptr)
 		{
@@ -137,7 +328,7 @@ namespace Natives
 		CHECK_PARAMS(5);
 
 		const auto id = static_cast<int>(params[1]);
-		const auto node = Container::GetNodeByID(id);
+		const auto node = Container::Nodes::Find(id);
 
 		if (node == nullptr)
 		{
@@ -161,7 +352,7 @@ namespace Natives
 		CHECK_PARAMS(3);
 
 		const auto first_id = static_cast<int>(params[1]);
-		const auto first = Container::GetNodeByID(first_id);
+		const auto first = Container::Nodes::Find(first_id);
 
 		if (first == nullptr)
 		{
@@ -169,7 +360,7 @@ namespace Natives
 		}
 
 		const auto second_id = static_cast<int>(params[2]);
-		const auto second = Container::GetNodeByID(second_id);
+		const auto second = Container::Nodes::Find(second_id);
 
 		if (second == nullptr)
 		{
@@ -191,7 +382,7 @@ namespace Natives
 		CHECK_PARAMS(4);
 
 		const auto id = static_cast<int>(params[1]);
-		const auto node = Container::GetNodeByID(id);
+		const auto node = Container::Nodes::Find(id);
 
 		if (node == nullptr)
 		{
@@ -219,7 +410,7 @@ namespace Natives
 		auto result = INVALID_NODE_ID, id = INVALID_NODE_ID;
 		auto distance = std::numeric_limits<float>::infinity(), temp = 0.0f;
 
-		for (const auto node : Container::GetNodes())
+		for (const auto node : Container::Nodes::GetAll())
 		{
 			if (node.second->isSetForDeletion())
 			{
@@ -255,7 +446,7 @@ namespace Natives
 		CHECK_PARAMS(3);
 
 		const auto start_id = static_cast<int>(params[1]);
-		const auto start = Container::GetNodeByID(start_id);
+		const auto start = Container::Nodes::Find(start_id);
 
 		if (start == nullptr)
 		{
@@ -263,7 +454,7 @@ namespace Natives
 		}
 
 		const auto target_id = static_cast<int>(params[2]);
-		const auto target = Container::GetNodeByID(target_id);
+		const auto target = Container::Nodes::Find(target_id);
 
 		if (target == nullptr)
 		{
@@ -294,7 +485,7 @@ namespace Natives
 		}
 
 		const auto start_id = static_cast<int>(params[1]);
-		auto start = Container::GetNodeByID(start_id);
+		auto start = Container::Nodes::Find(start_id);
 
 		if (start == nullptr)
 		{
@@ -302,7 +493,7 @@ namespace Natives
 		}
 
 		const auto target_id = static_cast<int>(params[2]);
-		auto target = Container::GetNodeByID(target_id);
+		auto target = Container::Nodes::Find(target_id);
 
 		if (target == nullptr)
 		{
@@ -337,7 +528,7 @@ namespace Natives
 
 		const auto id = static_cast<int>(params[1]);
 
-		return Container::GetPathByID(id) != nullptr;
+		return Container::Paths::Find(id) != nullptr;
 	}
 
 
@@ -346,7 +537,7 @@ namespace Natives
 		CHECK_PARAMS(2);
 
 		const auto id = static_cast<int>(params[1]);
-		const auto path = Container::GetPathByID(id);
+		const auto path = Container::Paths::Find(id);
 
 		if (path == nullptr)
 		{
@@ -366,7 +557,7 @@ namespace Natives
 		CHECK_PARAMS(2);
 
 		const auto id = static_cast<int>(params[1]);
-		const auto path = Container::GetPathByID(id);
+		const auto path = Container::Paths::Find(id);
 
 		if (path == nullptr)
 		{
@@ -388,7 +579,7 @@ namespace Natives
 		CHECK_PARAMS(3);
 
 		const auto id = static_cast<int>(params[1]);
-		const auto path = Container::GetPathByID(id);
+		const auto path = Container::Paths::Find(id);
 
 		if (path == nullptr)
 		{
@@ -416,7 +607,7 @@ namespace Natives
 		CHECK_PARAMS(3);
 
 		const auto id = static_cast<int>(params[1]);
-		const auto path = Container::GetPathByID(id);
+		const auto path = Container::Paths::Find(id);
 
 		if (path == nullptr)
 		{
@@ -424,7 +615,7 @@ namespace Natives
 		}
 
 		const auto node_id = static_cast<int>(params[2]);
-		const auto node = Container::GetNodeByID(node_id);
+		const auto node = Container::Nodes::Find(node_id);
 
 		if (node == nullptr)
 		{
@@ -451,14 +642,14 @@ namespace Natives
 		CHECK_PARAMS(1);
 
 		const auto id = static_cast<int>(params[1]);
-		const auto path = Container::GetPathByID(id);
+		const auto path = Container::Paths::Find(id);
 
 		if (path == nullptr)
 		{
 			return GPS_ERROR_INVALID_PATH;
 		}
 
-		Container::DeletePath(path);
+		Container::Paths::Delete(path);
 		return GPS_ERROR_NONE;
 	}
 }

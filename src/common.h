@@ -4,8 +4,9 @@
 #include "../lib/sdk/plugincommon.h"
 
 
-#define INVALID_NODE_ID -1
-#define INVALID_PATH_ID -1
+const int INVALID_NODE_ID = -1;
+const int INVALID_PATH_ID = -1;
+const int INVALID_CONNECTION_ID = -1;
 
 
 typedef void(*logprintf_t)(const char* format, ...);

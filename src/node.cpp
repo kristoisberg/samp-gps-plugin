@@ -27,55 +27,34 @@ bool Node::isSetForDeletion() const
 }
 
 
-void Node::addOutgoingConnection(Connection* connection)
+void Node::addConnection(Connection* connection)
 {
-	this->outgoingConnections.push_back(connection);
+	this->connections.push_back(connection);
 }
 
 
-void Node::removeOutgoingConnection(Connection* connection)
+void Node::removeConnection(Connection* connection)
 {
-	const auto it = std::find(this->outgoingConnections.begin(), this->outgoingConnections.end(), connection);
+	const auto it = std::find(this->connections.begin(), this->connections.end(), connection);
 
-	if (it != this->outgoingConnections.end())
+	if (it != this->connections.end())
 	{
-		this->outgoingConnections.erase(it);
+		this->connections.erase(it);
 	}
 }
 
 
-std::vector<Connection*> Node::getOutgoingConnections() const
+std::vector<Connection*> Node::getConnections() const
 {
-	return this->outgoingConnections;
-}
-
-
-void Node::addIncomingConnection(Connection* connection)
-{
-	this->incomingConnections.push_back(connection);
-}
-
-
-void Node::removeIncomingConnection(Connection* connection)
-{
-	const auto it = std::find(this->incomingConnections.begin(), this->incomingConnections.end(), connection);
-
-	if (it != this->incomingConnections.end())
-	{
-		this->incomingConnections.erase(it);
-	}
-}
-
-
-std::vector<Connection*> Node::getIncomingConnections() const
-{
-	return this->incomingConnections;
+	return this->connections;
 }
 
 
 void Node::addToPath(Path* path, int index)
 {
-	this->paths.emplace_back(path, index);
+	this->pathsLock.lock();
+	this->paths.push_back(std::pair<Path*, int>(path, index));
+	this->pathsLock.unlock();
 }
 
 
@@ -98,7 +77,9 @@ void Node::removeFromPath(Path* path)
 
 	if (it != this->paths.end())
 	{
+		this->pathsLock.lock();
 		this->paths.erase(it);
+		this->pathsLock.unlock();
 	}
 }
 

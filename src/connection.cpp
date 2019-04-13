@@ -1,11 +1,18 @@
 ﻿#include "connection.h"
 
 
-Connection::Connection(Node* source, Node* target, const float distance)
+Connection::Connection(const int id, Node* source, Node* target, const float distance)
 {
+	this->id = id;
 	this->source = source;
 	this->target = target;
 	this->distance = distance;
+}
+
+
+int Connection::getId() const
+{
+	return this->id;
 }
 
 

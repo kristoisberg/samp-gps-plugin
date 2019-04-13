@@ -9,7 +9,8 @@ enum
 	GPS_ERROR_INVALID_PARAMS = -1,
 	GPS_ERROR_INVALID_PATH = -2,
 	GPS_ERROR_INVALID_NODE = -3,
-	GPS_ERROR_INTERNAL = -4
+	GPS_ERROR_INVALID_CONNECTION = 4,
+	GPS_ERROR_INTERNAL = -5
 };
 
 
@@ -22,14 +23,26 @@ enum
 
 
 namespace Natives {
+	cell AMX_NATIVE_CALL CreateMapNode(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL DestroyMapNode(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL IsValidMapNode(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetMapNodePos(AMX* amx, cell* params);
+
+	cell AMX_NATIVE_CALL CreateConnection(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL DestroyConnection(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL GetConnectionSource(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL GetConnectionTarget(AMX* amx, cell* params);
+
+	cell AMX_NATIVE_CALL GetMapNodeConnectionCount(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL GetMapNodeConnection(AMX* amx, cell* params);
+	cell AMX_NATIVE_CALL GetConnectionBetweenMapNodes(AMX* amx, cell* params);
+
 	cell AMX_NATIVE_CALL GetDistanceBetweenMapNodes(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetAngleBetweenMapNodes(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetMapNodeDistanceFromPoint(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetMapNodeAngleFromPoint(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetClosestMapNodeToPoint(AMX* amx, cell* params);
-	cell AMX_NATIVE_CALL GetMapNodeConnectionCount(AMX* amx, cell* params);
+
 	cell AMX_NATIVE_CALL GetHighestMapNodeID(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetRandomMapNode(AMX* amx, cell* params);
 
