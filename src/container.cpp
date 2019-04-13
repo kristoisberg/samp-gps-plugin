@@ -158,6 +158,8 @@ namespace Container
 			connection->getSource()->removeConnection(connection);
 			connection->getTarget()->removeConnection(connection);
 
+			connections.erase(connection->getId());
+
 			delete connection;
 		}
 

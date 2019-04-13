@@ -3,13 +3,15 @@
 
 #include "file.h"
 #include "container.h"
+#include "connection.h"
+#include <iostream>
 
 
 namespace File
 {
 	bool LoadNodes(const std::string& filename, int& line_count, int& node_count, int& connection_count)
 	{
-		std::ifstream file(filename);
+		std::ifstream file("scriptfiles/" + filename);
 
 		if (!file.good())
 		{
@@ -59,6 +61,33 @@ namespace File
 		}
 
 		Container::UnlockExclusive();
+
+		file.close();
+		return true;
+	}
+
+
+	bool SaveNodes(const std::string& filename)
+	{
+		std::ofstream file("scriptfiles/" + filename);
+
+		if (!file.good())
+		{
+			return false;
+		}
+
+		for (const auto node : Container::Nodes::GetAll())
+		{
+			if (!node.second->isSetForDeletion())
+			{
+				file << 0 << " " << node.second->getX() << " " << node.second->getY() << " " << node.second->getZ() << " " << -1 << " " << node.second->getID() << '\n';
+			}
+		}
+
+		for (const auto connection : Container::Connections::GetAll())
+		{
+			file << 1 << " " << connection.second->getSource()->getID() << " " << connection.second->getTarget()->getID() << '\n';
+		}
 
 		file.close();
 		return true;

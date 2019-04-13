@@ -20,7 +20,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData)
 
 	int line_count = 0, node_count = 0, connection_count = 0;
 
-	if (!File::LoadNodes("scriptfiles/GPS.dat", line_count, node_count, connection_count))
+	if (!File::LoadNodes("GPS.dat", line_count, node_count, connection_count))
 	{
 		logprintf("[GPS plugin]: Failed to open \"GPS.dat\"!");
 	}
@@ -41,26 +41,40 @@ PLUGIN_EXPORT void PLUGIN_CALL Unload()
 
 AMX_NATIVE_INFO PluginNatives[] =
 {
-	{"IsValidMapNode", 				Natives::IsValidMapNode},
-	{"GetMapNodePos",				Natives::GetMapNodePos},
-	{"GetDistanceBetweenMapNodes",	Natives::GetDistanceBetweenMapNodes},
-	{"GetAngleBetweenMapNodes",		Natives::GetAngleBetweenMapNodes},
-	{"GetMapNodeDistanceFromPoint",	Natives::GetMapNodeDistanceFromPoint},
-	{"GetMapNodeAngleFromPoint",	Natives::GetMapNodeAngleFromPoint},
-	{"GetClosestMapNodeToPoint",	Natives::GetClosestMapNodeToPoint},
-	{"GetMapNodeConnectionCount",	Natives::GetMapNodeConnectionCount},
-	{"GetHighestMapNodeID",			Natives::GetHighestMapNodeID},
-	{"GetRandomMapNode",			Natives::GetRandomMapNode},
+	{"CreateMapNode",					Natives::CreateMapNode},
+	{"DestroyMapNode",					Natives::DestroyMapNode},
+	{"IsValidMapNode", 					Natives::IsValidMapNode},
+	{"GetMapNodePos",					Natives::GetMapNodePos},
 
-	{"FindPath",					Natives::FindPath},
-	{"FindPathThreaded",			Natives::FindPathThreaded},
+	{"CreateConnection",				Natives::CreateConnection},
+	{"DestroyConnection",				Natives::DestroyConnection},
+	{"GetConnectionSource", 			Natives::GetConnectionSource},
+	{"GetConnectionTarget",				Natives::GetConnectionTarget},
 
-	{"IsValidPath", 				Natives::IsValidPath},
-	{"GetPathSize",					Natives::GetPathSize},
-	{"GetPathLength",				Natives::GetPathLength},
-	{"GetPathNode",					Natives::GetPathNode},
-	{"GetPathNodeIndex",			Natives::GetPathNodeIndex},
-	{"DestroyPath",					Natives::DestroyPath},
+	{"GetMapNodeConnectionCount",		Natives::GetMapNodeConnectionCount},
+	{"GetMapNodeConnection",			Natives::GetMapNodeConnection},
+	{"GetConnectionBetweenMapNodes",	Natives::GetConnectionBetweenMapNodes},
+
+	{"GetDistanceBetweenMapNodes",		Natives::GetDistanceBetweenMapNodes},
+	{"GetAngleBetweenMapNodes",			Natives::GetAngleBetweenMapNodes},
+	{"GetMapNodeDistanceFromPoint",		Natives::GetMapNodeDistanceFromPoint},
+	{"GetMapNodeAngleFromPoint",		Natives::GetMapNodeAngleFromPoint},
+	{"GetClosestMapNodeToPoint",		Natives::GetClosestMapNodeToPoint},
+	
+	{"GetHighestMapNodeID",				Natives::GetHighestMapNodeID},
+	{"GetRandomMapNode",				Natives::GetRandomMapNode},
+
+	{"FindPath",						Natives::FindPath},
+	{"FindPathThreaded",				Natives::FindPathThreaded},
+
+	{"SaveMapNodesToFile",				Natives::SaveMapNodesToFile},
+
+	{"IsValidPath", 					Natives::IsValidPath},
+	{"GetPathSize",						Natives::GetPathSize},
+	{"GetPathLength",					Natives::GetPathLength},
+	{"GetPathNode",						Natives::GetPathNode},
+	{"GetPathNodeIndex",				Natives::GetPathNodeIndex},
+	{"DestroyPath",						Natives::DestroyPath},
 
 	{0, 0}
 };

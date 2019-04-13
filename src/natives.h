@@ -22,7 +22,8 @@ enum
 	}
 
 
-namespace Natives {
+namespace Natives 
+{
 	cell AMX_NATIVE_CALL CreateMapNode(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL DestroyMapNode(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL IsValidMapNode(AMX* amx, cell* params);
@@ -45,6 +46,8 @@ namespace Natives {
 
 	cell AMX_NATIVE_CALL GetHighestMapNodeID(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL GetRandomMapNode(AMX* amx, cell* params);
+
+	cell AMX_NATIVE_CALL SaveMapNodesToFile(AMX* amx, cell* params);
 
 	cell AMX_NATIVE_CALL FindPath(AMX* amx, cell* params);
 	cell AMX_NATIVE_CALL FindPathThreaded(AMX* amx, cell* params);

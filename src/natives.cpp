@@ -9,6 +9,7 @@
 #include "connection.h"
 #include "node.h"
 #include "path.h"
+#include "file.h"
 
 
 namespace Natives
@@ -438,6 +439,21 @@ namespace Natives
 		*address = result;
 
 		return GPS_ERROR_NONE;
+	}
+
+
+	cell AMX_NATIVE_CALL SaveMapNodesToFile(AMX* amx, cell* params)
+	{
+		CHECK_PARAMS(1);
+
+		const auto filename = amx_GetCppString(amx, params[1]);
+
+		if (File::SaveNodes(filename))
+		{
+			return GPS_ERROR_NONE;
+		}
+
+		return GPS_ERROR_INTERNAL;
 	}
 
 

@@ -46,6 +46,8 @@ native GetClosestMapNodeToPoint(Float:x, Float:y, Float:z, &MapNode:nodeid, MapN
 native GetHighestMapNodeID();
 native GetRandomMapNode(&MapNode:nodeid);
 
+native SaveMapNodesToFile(const filename[]);
+
 native FindPath(MapNode:source, MapNode:target, &Path:pathid);
 native FindPathThreaded(MapNode:source, MapNode:target, const callback[], const format[] = "", {Float, _}:...);
 
