@@ -32,27 +32,6 @@ namespace Container
 	}
 
 
-	bool AddConnection(const int startID, const int targetID)
-	{
-		auto start = GetNodeByID(startID);
-
-		if (start == nullptr)
-		{
-			return false;
-		}
-
-		const auto target = GetNodeByID(targetID);
-
-		if (target == nullptr)
-		{
-			return false;
-		}
-
-		start->addConnection(new Connection(target, start->getDistanceFromNode(target)));
-		return true;
-	}
-
-
 	Node* GetNodeByID(const int id)
 	{
 		const auto node = nodes.find(id);
@@ -94,10 +73,54 @@ namespace Container
 			return false;
 		}
 
+		for (auto connection : node->getOutgoingConnections())
+		{
+			DeleteConnection(connection);
+		}
+
+		for (auto connection : node->getIncomingConnections())
+		{
+			DeleteConnection(connection);
+		}
+
 		nodes.erase(node->getID());
 
 		delete node;
 		return true;
+	}
+
+
+	bool AddConnection(const int sourceID, const int targetID)
+	{
+		auto source = GetNodeByID(sourceID);
+
+		if (source == nullptr)
+		{
+			return false;
+		}
+
+		const auto target = GetNodeByID(targetID);
+
+		if (target == nullptr)
+		{
+			return false;
+		}
+
+		const auto connection = new Connection(source, target, source->getDistanceFromNode(target));
+
+		source->addOutgoingConnection(connection);
+		target->addIncomingConnection(connection);
+		
+		return true;
+	}
+
+
+	void DeleteConnection(Connection* connection)
+	{
+		connection->getSource()->removeOutgoingConnection(connection);
+		connection->getTarget()->removeIncomingConnection(connection);
+
+		delete connection;
 	}
 
 

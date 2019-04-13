@@ -27,15 +27,49 @@ bool Node::isSetForDeletion() const
 }
 
 
-void Node::addConnection(Connection* connection)
+void Node::addOutgoingConnection(Connection* connection)
 {
-	this->connections.push_back(connection);
+	this->outgoingConnections.push_back(connection);
 }
 
 
-std::vector<Connection*> Node::getConnections() const
+void Node::removeOutgoingConnection(Connection* connection)
 {
-	return this->connections;
+	const auto it = std::find(this->outgoingConnections.begin(), this->outgoingConnections.end(), connection);
+
+	if (it != this->outgoingConnections.end())
+	{
+		this->outgoingConnections.erase(it);
+	}
+}
+
+
+std::vector<Connection*> Node::getOutgoingConnections() const
+{
+	return this->outgoingConnections;
+}
+
+
+void Node::addIncomingConnection(Connection* connection)
+{
+	this->incomingConnections.push_back(connection);
+}
+
+
+void Node::removeIncomingConnection(Connection* connection)
+{
+	const auto it = std::find(this->incomingConnections.begin(), this->incomingConnections.end(), connection);
+
+	if (it != this->incomingConnections.end())
+	{
+		this->incomingConnections.erase(it);
+	}
+}
+
+
+std::vector<Connection*> Node::getIncomingConnections() const
+{
+	return this->incomingConnections;
 }
 
 

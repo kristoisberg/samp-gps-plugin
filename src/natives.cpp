@@ -96,7 +96,7 @@ namespace Natives
 
 		cell* address = nullptr;
 		amx_GetAddr(amx, params[2], &address);
-		*address = node->getConnections().size();
+		*address = node->getOutgoingConnections().size();
 
 		return GPS_ERROR_NONE;
 	}
@@ -221,6 +221,11 @@ namespace Natives
 
 		for (const auto node : Container::GetNodes())
 		{
+			if (node.second->isSetForDeletion())
+			{
+				continue;
+			}
+
 			id = node.second->getID();
 
 			if (ignored == id)

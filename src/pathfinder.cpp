@@ -39,7 +39,7 @@ namespace Pathfinder
 
 	Path* FindPathInternal(Node* start, Node* target)
 	{
-		if (start == target)
+		if (start == target || start->isSetForDeletion() || target->isSetForDeletion())
 		{
 			auto result = new Path(0.0f);
 			result->addNodeToEnd(start);
@@ -67,9 +67,15 @@ namespace Pathfinder
 				break;
 			}
 
-			for (auto connection : current_node->node->getConnections())
+			for (auto connection : current_node->node->getOutgoingConnections())
 			{
 				const auto connection_target = connection->getTarget();
+
+				if (connection_target->isSetForDeletion())
+				{
+					continue;
+				}
+
 				auto next_node = &existing_paths.at(connection_target->getID());
 				const auto distance = current_node->distance + connection->getDistance();
 

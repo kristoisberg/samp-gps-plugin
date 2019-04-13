@@ -15,7 +15,8 @@ namespace Container
 	void SetNodeForDeletion(Node* node);
 	bool TryDeleteNode(Node* node);
 
-	bool AddConnection(int startID, int targetID);
+	bool AddConnection(int sourceID, int targetID);
+	void DeleteConnection(Connection* connection);
 
 	int AddPath(Path* path);
 	void DeletePath(Path* path);

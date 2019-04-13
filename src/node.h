@@ -12,8 +12,13 @@ public:
 	void setForDeletion();
 	bool isSetForDeletion() const;
 
-	void addConnection(Connection* connection);
-	std::vector<Connection*> getConnections() const;
+	void addOutgoingConnection(Connection* connection);
+	void removeOutgoingConnection(Connection* connection);
+	std::vector<Connection*> getOutgoingConnections() const;
+
+	void addIncomingConnection(Connection* connection);
+	void removeIncomingConnection(Connection* connection);
+	std::vector<Connection*> getIncomingConnections() const;
 
 	void addToPath(Path* path, int index);
 	void removeFromPath(Path* path);
@@ -40,6 +45,7 @@ private:
 	float y;
 	float z;
 
-	std::vector<Connection*> connections;
+	std::vector<Connection*> outgoingConnections;
+	std::vector<Connection*> incomingConnections;
 	std::vector<std::pair<Path*, int>> paths;
 };
