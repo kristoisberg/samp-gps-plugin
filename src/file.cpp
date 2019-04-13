@@ -16,6 +16,8 @@ namespace File
 			return false;
 		}
 
+		Container::LockExclusive();
+
 		std::string buffer;
 		int type = 0, id = 0, id2 = 0, direction = 0, ignore = 0;
 		float x = 0.0f, y = 0.0f, z = 0.0f;
@@ -55,6 +57,8 @@ namespace File
 
 			line_count++;
 		}
+
+		Container::UnlockExclusive();
 
 		file.close();
 		return true;

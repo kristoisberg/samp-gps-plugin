@@ -8,7 +8,6 @@
 namespace Container
 {
 	bool AddNode(int id, float x, float y, float z);
-	
 	Node* GetNodeByID(int id);
 	std::unordered_map<int, Node*> GetNodes();
 	int GetHighestNodeID();
@@ -23,4 +22,10 @@ namespace Container
 	Path* GetPathByID(int id);
 	std::unordered_map<int, Path*> GetPaths();
 	int GetHighestPathID();
+
+	void LockExclusive();
+	void UnlockExclusive();
+
+	void LockShared();
+	void UnlockShared();
 };

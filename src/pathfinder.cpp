@@ -140,6 +140,8 @@ namespace Pathfinder
 
 	void FindPathThreaded(Node* start, Node* target, Callback* callback)
 	{
+		Container::LockShared();
+
 		try
 		{
 			callback->setResult(Container::AddPath(FindPathInternal(start, target)));
@@ -149,6 +151,7 @@ namespace Pathfinder
 			callback->setResult(INVALID_PATH_ID);
 		}
 
+		Container::UnlockShared();
 		amx::QueueCallback(callback->getAMX(), callback);
 	}
 };

@@ -1,4 +1,6 @@
-﻿#include "container.h"
+﻿#include <shared_mutex>
+
+#include "container.h"
 #include "connection.h"
 
 
@@ -11,6 +13,8 @@ namespace Container
 
 		std::unordered_map<int, Path*> paths;
 		int highest_path_id;
+
+		std::shared_mutex lock;
 	}
 
 
@@ -174,5 +178,29 @@ namespace Container
 	int GetHighestPathID()
 	{
 		return highest_path_id;
+	}
+
+
+	void LockExclusive()
+	{
+		lock.lock();
+	}
+
+
+	void UnlockExclusive()
+	{
+		lock.unlock();
+	}
+
+
+	void LockShared()
+	{
+		lock.lock_shared();
+	}
+
+
+	void UnlockShared()
+	{
+		lock.unlock_shared();
 	}
 }
