@@ -43,17 +43,15 @@ namespace Natives
 	{
 		CHECK_PARAMS(1);
 
-		Container::LockExclusive();
-
 		const auto id = static_cast<int>(params[1]);
 		const auto node = Container::Nodes::Find(id);
 
 		if (node == nullptr)
 		{
-			Container::UnlockExclusive();
 			return GPS_ERROR_INVALID_NODE;
 		}
 
+		Container::LockExclusive();
 		Container::Nodes::SetForDeletion(node);
 		Container::UnlockExclusive();
 
@@ -66,9 +64,8 @@ namespace Natives
 		CHECK_PARAMS(1);
 
 		const auto id = static_cast<int>(params[1]);
-		const auto result = Container::Nodes::Find(id) != nullptr;
 
-		return result;
+		return Container::Nodes::Find(id) != nullptr;
 	}
 
 
@@ -128,17 +125,15 @@ namespace Natives
 	{
 		CHECK_PARAMS(1);
 
-		Container::LockExclusive();
-
 		const auto id = static_cast<int>(params[1]);
 		const auto connection = Container::Connections::Find(id);
 
 		if (connection == nullptr)
 		{
-			Container::UnlockExclusive();
 			return GPS_ERROR_INVALID_CONNECTION;
 		}
 
+		Container::LockExclusive();
 		Container::Connections::Delete(connection);
 		Container::UnlockExclusive();
 
