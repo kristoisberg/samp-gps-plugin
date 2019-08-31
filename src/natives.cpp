@@ -10,6 +10,7 @@
 #include "node.h"
 #include "path.h"
 #include "file.h"
+#include "amx_handler.h"
 
 
 namespace Natives
@@ -42,15 +43,17 @@ namespace Natives
 	{
 		CHECK_PARAMS(1);
 
+		Container::LockExclusive();
+
 		const auto id = static_cast<int>(params[1]);
 		const auto node = Container::Nodes::Find(id);
 
 		if (node == nullptr)
 		{
+			Container::UnlockExclusive();
 			return GPS_ERROR_INVALID_NODE;
 		}
 
-		Container::LockExclusive();
 		Container::Nodes::SetForDeletion(node);
 		Container::UnlockExclusive();
 
@@ -63,8 +66,9 @@ namespace Natives
 		CHECK_PARAMS(1);
 
 		const auto id = static_cast<int>(params[1]);
+		const auto result = Container::Nodes::Find(id) != nullptr;
 
-		return Container::Nodes::Find(id) != nullptr;
+		return result;
 	}
 
 
@@ -104,9 +108,7 @@ namespace Natives
 		const auto source_id = static_cast<int>(params[1]), target_id = static_cast<int>(params[2]);
 
 		Container::LockExclusive();
-
 		const auto id = Container::Connections::Add(source_id, target_id);
-
 		Container::UnlockExclusive();
 
 		if (id == -1)
@@ -126,15 +128,17 @@ namespace Natives
 	{
 		CHECK_PARAMS(1);
 
+		Container::LockExclusive();
+
 		const auto id = static_cast<int>(params[1]);
 		const auto connection = Container::Connections::Find(id);
 
 		if (connection == nullptr)
 		{
+			Container::UnlockExclusive();
 			return GPS_ERROR_INVALID_CONNECTION;
 		}
 
-		Container::LockExclusive();
 		Container::Connections::Delete(connection);
 		Container::UnlockExclusive();
 
@@ -521,7 +525,7 @@ namespace Natives
 		char* format = nullptr;
 		amx_StrParam(amx, params[4], format);
 
-		auto callback = new Callback(amx, callback_name, format, params, 4);
+		auto callback = new Callback(AmxHandler::GetAmx(amx), callback_name, format, params, 4);
 
 		try
 		{
@@ -544,7 +548,11 @@ namespace Natives
 
 		const auto id = static_cast<int>(params[1]);
 
-		return Container::Paths::Find(id) != nullptr;
+		Container::LockShared();
+		const auto path = Container::Paths::Find(id);
+		Container::UnlockShared();
+
+		return path != nullptr;
 	}
 
 
@@ -553,7 +561,10 @@ namespace Natives
 		CHECK_PARAMS(2);
 
 		const auto id = static_cast<int>(params[1]);
+
+		Container::LockShared();
 		const auto path = Container::Paths::Find(id);
+		Container::UnlockShared();
 
 		if (path == nullptr)
 		{
@@ -573,7 +584,10 @@ namespace Natives
 		CHECK_PARAMS(2);
 
 		const auto id = static_cast<int>(params[1]);
+
+		Container::LockShared();
 		const auto path = Container::Paths::Find(id);
+		Container::UnlockShared();
 
 		if (path == nullptr)
 		{
@@ -595,7 +609,10 @@ namespace Natives
 		CHECK_PARAMS(3);
 
 		const auto id = static_cast<int>(params[1]);
+
+		Container::LockShared();
 		const auto path = Container::Paths::Find(id);
+		Container::UnlockShared();
 
 		if (path == nullptr)
 		{
@@ -623,7 +640,10 @@ namespace Natives
 		CHECK_PARAMS(3);
 
 		const auto id = static_cast<int>(params[1]);
+
+		Container::LockShared();
 		const auto path = Container::Paths::Find(id);
+		Container::UnlockShared();
 
 		if (path == nullptr)
 		{
@@ -658,14 +678,20 @@ namespace Natives
 		CHECK_PARAMS(1);
 
 		const auto id = static_cast<int>(params[1]);
+
+		Container::LockShared();
 		const auto path = Container::Paths::Find(id);
+		Container::UnlockShared();
 
 		if (path == nullptr)
 		{
 			return GPS_ERROR_INVALID_PATH;
 		}
 
+		Container::LockExclusive();
 		Container::Paths::Delete(path);
+		Container::UnlockExclusive();
+
 		return GPS_ERROR_NONE;
 	}
 }

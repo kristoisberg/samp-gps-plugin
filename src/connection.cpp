@@ -3,32 +3,32 @@
 
 Connection::Connection(const int id, Node* source, Node* target, const float distance)
 {
-	this->id = id;
-	this->source = source;
-	this->target = target;
-	this->distance = distance;
+	id_ = id;
+	source_ = source;
+	target_ = target;
+	distance_ = distance;
 }
 
 
 int Connection::getId() const
 {
-	return this->id;
+	return id_;
 }
 
 
 Node* Connection::getSource() const
 {
-	return this->source;
+	return source_;
 }
 
 
 Node* Connection::getTarget() const
 {
-	return this->target;
+	return target_;
 }
 
 
 float Connection::getDistance() const
 {
-	return this->distance;
+	return distance_;
 }

@@ -1,7 +1,8 @@
 #include "common.h"
 #include "natives.h"
-#include "amx.h"
 #include "file.h"
+#include "amx_handler.h"
+#include "config_reader.h"
 
 
 logprintf_t logprintf;
@@ -16,17 +17,22 @@ PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports()
 PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData)
 {
 	pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
-	logprintf = (logprintf_t)ppData[PLUGIN_DATA_LOGPRINTF];
+	logprintf = (logprintf_t)(ppData[PLUGIN_DATA_LOGPRINTF]);
 
-	int line_count = 0, node_count = 0, connection_count = 0;
+	auto config = ConfigReader("server.cfg");
 
-	if (!File::LoadNodes("GPS.dat", line_count, node_count, connection_count))
+	if (config.getValue<int>("gps_load_nodes", 1) != 0)
 	{
-		logprintf("[GPS plugin]: Failed to open \"GPS.dat\"!");
-	}
-	else
-	{
-		logprintf("[GPS plugin]: Read %i lines, loaded %i nodes and %i connections.", line_count, node_count, connection_count);
+		auto line_count = 0, node_count = 0, connection_count = 0;
+
+		if (!File::LoadNodes("GPS.dat", line_count, node_count, connection_count))
+		{
+			logprintf("[GPS plugin]: Failed to open \"GPS.dat\"!");
+		}
+		else
+		{
+			logprintf("[GPS plugin]: Read %i lines, loaded %i nodes and %i connections.", line_count, node_count, connection_count);
+		}
 	}
 
 	return true;
@@ -82,7 +88,7 @@ AMX_NATIVE_INFO PluginNatives[] =
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx)
 {
-	amx::Load(amx);
+	AmxHandler::LoadAmx(amx);
 
 	return amx_Register(amx, PluginNatives, -1);
 }
@@ -90,7 +96,7 @@ PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx)
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxUnload(AMX* amx)
 {
-	amx::Unload(amx);
+	AmxHandler::UnloadAmx(amx);
 
 	return 1;
 }
@@ -98,8 +104,5 @@ PLUGIN_EXPORT int PLUGIN_CALL AmxUnload(AMX* amx)
 
 PLUGIN_EXPORT void PLUGIN_CALL ProcessTick()
 {
-	for (const std::pair<AMX*, AMXInfo> i : amx_list)
-	{
-		amx::ProcessTick(i.first);
-	}
+	AmxHandler::ProcessTick();
 }

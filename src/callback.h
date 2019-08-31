@@ -10,14 +10,14 @@
 class Callback
 {
 public:
-	Callback(AMX* amx, const std::string& function, const char* format, cell* params, unsigned int param_offset);
+	Callback(Amx* amx, const std::string& function, const char* format, cell* params, unsigned int param_offset);
 	void setResult(int value);
-	AMX* getAMX() const;
+	Amx* getAmx() const;
 	bool call();
 
 private:
-	AMX* amx;
-	std::string function;
-	std::deque<std::variant<int, std::string>> arguments;
-	int result;
+	Amx* amx_;
+	std::string function_;
+	std::deque<std::variant<int, std::string>> arguments_;
+	int result_;
 };

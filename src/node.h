@@ -35,15 +35,15 @@ public:
 	float getAngleFromNode(Node* other) const;
 
 private:
-	int id;
-	bool willBeDeleted;
+	int id_;
+	bool is_set_for_deletion_;
 
-	float x;
-	float y;
-	float z;
+	float x_;
+	float y_;
+	float z_;
 
-	std::vector<Connection*> connections;
+	std::vector<Connection*> connections_;
 
-	std::vector<std::pair<Path*, int>> paths;
-	std::mutex pathsLock;
+	std::vector<std::pair<Path*, int>> paths_;
+	std::mutex paths_lock_;
 };

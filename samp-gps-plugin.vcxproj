@@ -65,10 +65,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <ReferencePath>$(VC_ReferencesPath_x86);</ReferencePath>
+    <SourcePath>$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -136,7 +138,9 @@
     <ClCompile Include="lib\sdk\amxplugin2.cpp" />
     <ClCompile Include="lib\sdk\amx\getch.c" />
     <ClCompile Include="src\amx.cpp" />
+    <ClCompile Include="src\amx_handler.cpp" />
     <ClCompile Include="src\callback.cpp" />
+    <ClCompile Include="src\config_reader.cpp" />
     <ClCompile Include="src\connection.cpp" />
     <ClCompile Include="src\container.cpp" />
     <ClCompile Include="src\file.cpp" />
@@ -153,8 +157,10 @@
     <ClInclude Include="lib\sdk\amx\sclinux.h" />
     <ClInclude Include="lib\sdk\plugincommon.h" />
     <ClInclude Include="src\amx.h" />
+    <ClInclude Include="src\amx_handler.h" />
     <ClInclude Include="src\callback.h" />
     <ClInclude Include="src\common.h" />
+    <ClInclude Include="src\config_reader.h" />
     <ClInclude Include="src\connection.h" />
     <ClInclude Include="src\container.h" />
     <ClInclude Include="src\file.h" />

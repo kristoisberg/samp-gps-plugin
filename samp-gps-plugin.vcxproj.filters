@@ -57,6 +57,12 @@
     <ClCompile Include="src\natives.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\amx_handler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\config_reader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\amx.h">
@@ -102,6 +108,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\natives.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\amx_handler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\config_reader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

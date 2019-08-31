@@ -6,66 +6,66 @@
 
 Node::Node(const int id, const float x, const float y, const float z)
 {
-	this->id = id;
-	this->willBeDeleted = false;
+	id_ = id;
+	is_set_for_deletion_ = false;
 
-	this->x = x;
-	this->y = y;
-	this->z = z;
+	x_ = x;
+	y_ = y;
+	z_ = z;
 }
 
 
 void Node::setForDeletion()
 {
-	this->willBeDeleted = true;
+	is_set_for_deletion_ = true;
 }
 
 
 bool Node::isSetForDeletion() const
 {
-	return this->willBeDeleted;
+	return is_set_for_deletion_;
 }
 
 
 void Node::addConnection(Connection* connection)
 {
-	this->connections.push_back(connection);
+	connections_.push_back(connection);
 }
 
 
 void Node::removeConnection(Connection* connection)
 {
-	const auto it = std::find(this->connections.begin(), this->connections.end(), connection);
+	const auto it = std::find(connections_.begin(), connections_.end(), connection);
 
-	if (it != this->connections.end())
+	if (it != connections_.end())
 	{
-		this->connections.erase(it);
+		connections_.erase(it);
 	}
 }
 
 
 std::vector<Connection*> Node::getConnections() const
 {
-	return this->connections;
+	return connections_;
 }
 
 
 void Node::addToPath(Path* path, int index)
 {
-	this->pathsLock.lock();
-	this->paths.push_back(std::pair<Path*, int>(path, index));
-	this->pathsLock.unlock();
+	paths_lock_.lock();
+	paths_.emplace_back(path, index);
+	paths_lock_.unlock();
 }
 
 
 int Node::getPositionInPath(Path* path)
 {
-	this->pathsLock.lock();
+	paths_lock_.lock();
 
-	const auto it = std::find_if(this->paths.begin(), this->paths.end(), [&path](const std::pair<Path*, int>& pair) { return pair.first == path; });
-	const auto result = (it == this->paths.end()) ? -1 : it->second;
+	const auto it = std::find_if(paths_.begin(), paths_.end(), [&path](const std::pair<Path*, int>& pair) { return pair.first == path; });
+	const auto result = (it == paths_.end()) ? -1 : it->second;
 
-	this->pathsLock.unlock();
+	paths_lock_.unlock();
 
 	return result;
 }
@@ -73,52 +73,52 @@ int Node::getPositionInPath(Path* path)
 
 void Node::removeFromPath(Path* path)
 {
-	this->pathsLock.lock();
+	paths_lock_.lock();
 
-	const auto it = std::find_if(this->paths.begin(), this->paths.end(), [&path](const std::pair<Path*, int>& pair) { return pair.first == path; });
+	const auto it = std::find_if(paths_.begin(), paths_.end(), [&path](const std::pair<Path*, int>& pair) { return pair.first == path; });
 
-	if (it != this->paths.end())
+	if (it != paths_.end())
 	{
-		this->paths.erase(it);
+		paths_.erase(it);
 	}
 
-	this->pathsLock.unlock();
+	paths_lock_.unlock();
 }
 
 
 int Node::getPathCount() const
 {
-	return this->paths.size();
+	return paths_.size();
 }
 
 
 int Node::getID() const
 {
-	return this->id;
+	return id_;
 }
 
 
 float Node::getX() const
 {
-	return this->x;
+	return x_;
 }
 
 
 float Node::getY() const
 {
-	return this->y;
+	return y_;
 }
 
 
 float Node::getZ() const
 {
-	return this->z;
+	return z_;
 }
 
 
 float Node::getDistanceFromPoint(const float pointX, const float pointY, const float pointZ) const
 {
-	return sqrt(pow(pointX - x, 2.0f) + pow(pointY - y, 2.0f) + pow(pointZ - z, 2.0f));
+	return sqrt(pow(pointX - x_, 2.0f) + pow(pointY - y_, 2.0f) + pow(pointZ - z_, 2.0f));
 }
 
 
@@ -130,7 +130,7 @@ float Node::getDistanceFromNode(Node* other) const
 
 float Node::getAngleFromPoint(const float pointX, const float pointY) const
 {
-	return atan2(pointY - y, pointX - x) * 180.0f / 3.14159265f;
+	return atan2(pointY - y_, pointX - x_) * 180.0f / 3.14159265f;
 }
 
 

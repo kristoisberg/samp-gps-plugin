@@ -1,10 +1,10 @@
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 #include "file.h"
 #include "container.h"
 #include "connection.h"
-#include <iostream>
 
 
 namespace File
@@ -21,8 +21,8 @@ namespace File
 		Container::LockExclusive();
 
 		std::string buffer;
-		int type = 0, id = 0, id2 = 0, direction = 0, ignore = 0;
-		float x = 0.0f, y = 0.0f, z = 0.0f;
+		auto type = 0, id = 0, id2 = 0, direction = 0, ignore = 0;
+		auto x = 0.0f, y = 0.0f, z = 0.0f;
 
 		while (std::getline(file, buffer))
 		{

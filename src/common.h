@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../lib/sdk/amx/amx.h"
 #include "../lib/sdk/amx/amx2.h"
 #include "../lib/sdk/plugincommon.h"
 
@@ -16,3 +17,5 @@ extern void *pAMXFunctions;
 class Path;
 class Node;
 class Connection;
+class Amx;
+class Callback;

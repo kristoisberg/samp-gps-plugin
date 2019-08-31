@@ -4,34 +4,34 @@
 #include "amx.h"
 
 
-Callback::Callback(AMX* amx, const std::string& function, const char* format, cell* params, const unsigned int param_offset)
+Callback::Callback(Amx* amx, const std::string& function, const char* format, cell* params, const unsigned int param_offset)
 {
-	this->amx = amx;
-	this->function = function;
+	amx_ = amx;
+	function_ = function;
+	result_ = 0;
 
-	if (format != NULL)
+	if (format != nullptr)
 	{
-		cell* addr = NULL;
-		unsigned int param_index = param_offset + 1;
+		const auto internal_amx = amx->getInternalAmx();
+		cell* address = nullptr;
+		auto param_index = param_offset + 1;
 
 		do
 		{
 			switch (*format)
 			{
-			case 'd':
-			case 'i':
-			case 'f':
+			case 's':
 			{
-				amx_GetAddr(amx, params[param_index++], &addr);
-				this->arguments.push_front(*addr);
+				char* string = nullptr;
+				amx_StrParam(internal_amx, params[param_index++], string);
+				arguments_.push_front(string == nullptr ? std::string() : std::string(string));
 				break;
 			}
 
-			case 's':
+			default:
 			{
-				char* string = NULL;
-				amx_StrParam(amx, params[param_index++], string);
-				this->arguments.push_front(string == NULL ? std::string() : std::string(string));
+				amx_GetAddr(internal_amx, params[param_index++], &address);
+				arguments_.push_front(*address);
 				break;
 			}
 			}
@@ -42,56 +42,57 @@ Callback::Callback(AMX* amx, const std::string& function, const char* format, ce
 
 void Callback::setResult(const int value)
 {
-	this->result = value;
+	result_ = value;
 }
 
 
-AMX* Callback::getAMX() const
+Amx* Callback::getAmx() const
 {
-	return this->amx;
+	return amx_;
 }
 
 
 bool Callback::call()
 {
-	int amx_idx = 0;
+	const auto internal_amx = amx_->getInternalAmx();
+	auto amx_idx = 0;
 	cell amx_ret;
 
-	const int error = amx_FindPublic(amx, this->function.c_str(), &amx_idx);
+	const auto error = amx_FindPublic(internal_amx, function_.c_str(), &amx_idx);
 
 	if (error != AMX_ERR_NONE)
 	{
-		std::cout << "Failed to locate public function \"" << this->function.c_str() << "\" in AMX, error: " << error << "\n";
+		std::cout << "Failed to locate public function \"" << function_ << "\" in AMX, error: " << error << "\n";
 		return false;
 	}
 
-	cell amx_addr = -1;
+	auto amx_address = -1;
 
-	for (std::variant<int, std::string> argument : arguments)
+	for (const auto& argument : arguments_)
 	{
 		if (argument.index() == 1)
 		{
-			cell tmp_addr;
+			cell tmp_address;
 
-			amx_PushString(amx, &tmp_addr, NULL, std::get<std::string>(argument).c_str(), 0, 0);
+			amx_PushString(internal_amx, &tmp_address, nullptr, std::get<std::string>(argument).c_str(), 0, 0);
 
-			if (amx_addr == -1)
+			if (amx_address == -1)
 			{
-				amx_addr = tmp_addr;
+				amx_address = tmp_address;
 			}
 		}
 		else
 		{
-			amx_Push(amx, std::get<int>(argument));
+			amx_Push(internal_amx, std::get<int>(argument));
 		}
 	}
 
-	amx_Push(amx, this->result);
-	amx_Exec(amx, &amx_ret, amx_idx);
+	amx_Push(internal_amx, result_);
+	amx_Exec(internal_amx, &amx_ret, amx_idx);
 
-	if (amx_addr != -1)
+	if (amx_address != -1)
 	{
-		amx_Release(amx, amx_addr);
+		amx_Release(internal_amx, amx_address);
 	}
 
 	return true;

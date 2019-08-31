@@ -1,26 +1,21 @@
 #pragma once
 
 #include <vector>
-#include <unordered_map>
 #include <mutex>
 
 #include "common.h"
-#include "callback.h"
 
 
-struct AMXInfo
+class Amx
 {
-	std::vector<Callback*> callback_queue;
+public:
+	Amx(AMX* amx);
+	void queueCallback(Callback* callback);
+	void processCallbacks();
+	AMX* getInternalAmx() const;
+
+private:
+	std::vector<Callback*> callback_queue_;
+	std::mutex callback_queue_lock_;
+	AMX* internal_amx_;
 };
-
-extern std::unordered_map<AMX*, AMXInfo> amx_list;
-extern std::mutex amx_list_lock;
-
-
-namespace amx
-{
-	void Load(AMX* amx);
-	void Unload(AMX* amx);
-	void ProcessTick(AMX* amx);
-	void QueueCallback(AMX* amx, Callback* callback);
-}

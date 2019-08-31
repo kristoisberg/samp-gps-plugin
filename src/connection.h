@@ -14,8 +14,8 @@ public:
 	float getDistance() const;
 
 private:
-	int id;
-	Node* source;
-	Node* target;
-	float distance;
+	int id_;
+	Node* source_;
+	Node* target_;
+	float distance_;
 };

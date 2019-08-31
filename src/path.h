@@ -17,7 +17,7 @@ public:
 	std::deque<Node*> getNodes() const;
 
 private:
-	int id;
-	std::deque<Node*> nodes;
-	float length;
+	int id_;
+	std::deque<Node*> nodes_;
+	float length_;
 };

@@ -14,8 +14,8 @@ namespace Pathfinder
 
 	struct VisitedNode
 	{
-		Node* node;
-		VisitedNode* previous;
+		Node* node = nullptr;
+		VisitedNode* previous = nullptr;
 		float distance = infinity;
 		float target_distance = infinity;
 		float total_distance = infinity;
@@ -53,7 +53,6 @@ namespace Pathfinder
 		const auto first_node = &existing_paths.at(start->getID());
 		first_node->distance = 0.0f;
 		first_node->total_distance = first_node->target_distance = start->getDistanceFromNode(target);
-		first_node->previous = nullptr;
 		first_node->node = start;
 		queue.push(first_node);
 
@@ -129,10 +128,19 @@ namespace Pathfinder
 	{
 		try
 		{
-			return Container::Paths::Add(FindPathInternal(start, target));
+			Container::LockShared();
+			const auto path = FindPathInternal(start, target);
+			Container::UnlockShared();
+
+			Container::LockExclusive();
+			const auto result = Container::Paths::Add(path);
+			Container::UnlockExclusive();
+
+			return result;
 		}
 		catch (const PathNotFoundException &e)
 		{
+			Container::UnlockShared();
 			return INVALID_PATH_ID;
 		}
 	}
@@ -140,18 +148,24 @@ namespace Pathfinder
 
 	void FindPathThreaded(Node* start, Node* target, Callback* callback)
 	{
-		Container::LockShared();
-
 		try
 		{
-			callback->setResult(Container::Paths::Add(FindPathInternal(start, target)));
+			Container::LockShared();
+			const auto path = FindPathInternal(start, target);
+			Container::UnlockShared();
+
+			Container::LockExclusive();
+			const auto result = Container::Paths::Add(path);
+			Container::UnlockExclusive();
+
+			callback->setResult(result);
 		}
 		catch (const PathNotFoundException &e)
 		{
+			Container::UnlockShared();
 			callback->setResult(INVALID_PATH_ID);
 		}
 
-		Container::UnlockShared();
-		amx::QueueCallback(callback->getAMX(), callback);
+		callback->getAmx()->queueCallback(callback);
 	}
 };
