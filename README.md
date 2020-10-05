@@ -1,6 +1,8 @@
 # SA-MP GPS Plugin
 
-[![sampctl](https://shields.southcla.ws/badge/sampctl-samp--gps--plugin-2f2f2f.svg?style=for-the-badge)](https://github.com/kristoisberg/samp-gps-plugin)
+[![sampctl](https://img.shields.io/badge/sampctl-samp--gps--plugin-2f2f2f.svg?style=for-the-badge)](https://github.com/kristoisberg/samp-gps-plugin)
+
+**Notice:** This repository is not being actively maintained anymore. If anyone wishes to continue the development of the project, please create a fork of the repository and release future versions there.
 
 This plugin offers a way of accessing and manipulating the data of San Andreas map nodes and finding paths between them. It is intended to be a modern and straightforward replacement for RouteConnector. The plugin uses a simple implementation of the A* algorithm for pathfinding. Finding a path from the top-leftmost node on the map to the bottom-rightmost node that consists of 684 nodes takes just a few milliseconds. It is worth noting that this is my first successful project in C++ and the last time I tried writing something in C++ was over half a year ago so there is a lot of room for improvement and I am planning to continue improving the code of this plugin as I progress.
 
