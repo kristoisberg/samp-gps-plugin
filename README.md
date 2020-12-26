@@ -170,13 +170,13 @@ CMD:pathtols(playerid) {
     new Float:x, Float:y, Float:z, MapNode:start;
     GetPlayerPos(playerid, x, y, z);
 
-    if (GetClosestMapNodeToPoint(x, y, z, start) != GPS_ERROR_NODE) {
+    if (GetClosestMapNodeToPoint(x, y, z, start) != GPS_ERROR_NONE) {
         return SendClientMessage(playerid, COLOR_RED, "Finding a node near you failed, GPS.dat was not loaded.");
     }
 
     new MapNode:target;
 
-    if (GetClosestMapNodeToPoint(1258.7352, -2036.7100, 59.4561, target)) { // this is also valid since the value of GPS_ERROR_NODE is 0.
+    if (GetClosestMapNodeToPoint(1258.7352, -2036.7100, 59.4561, target)) { // this is also valid since the value of GPS_ERROR_NONE is 0.
         return SendClientMessage(playerid, COLOR_RED, "Finding a node near LSPD failed, GPS.dat was not loaded.");
     }
 
