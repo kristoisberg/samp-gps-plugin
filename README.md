@@ -270,7 +270,7 @@ sampctl package run
 
 ## Credits
 
-* kvann - Creator of the plugin.
+* kristo - Creator of the plugin.
 * Gamer_Z - Creator of the original RouteConnector plugin which helped me understand the structure of GPS.dat and influenced this plugin a lot, the author of the original `GPS.dat`.
 * NaS - Author of the fixed `GPS.dat` distributed with the plugin.
 * Southclaws, IllidanS4, Hual - Helped me with the plugin in major ways (there were other helpful people as well, I appreciate it all).
