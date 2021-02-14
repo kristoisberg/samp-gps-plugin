@@ -11,7 +11,6 @@ This plugin offers a way of accessing and manipulating the data of San Andreas m
 
 * **Safer API** - Unlike RouteConnector, this plugins does not give you an array of nodes as the result of pathfinding. Instead of that, it gives you the ID of the found path that can be used later on. Each function (except `IsValidMapNode`, `IsValidPath` and `GetHighestMapNodeID`) returns an error code and the real result of them is passed by reference.
 * **Compatibility** - RouteConnector has a compatibility issue with some part of YSI that makes it call a wrong public function instead of the actual `GPS_WhenRouteIsCalculated` callback. This plugin lets you call a custom callback and pass arguments to it. In addition to that, RouteConnector uses Intel Threading Building Blocks for threading that has caused numerous compatibility (and PEBCAK) issues on Linux servers. This plugin uses `std::thread` for threading and does not have any dependencies. This plugin is also compatible with PawnPlus and supports asynchronous pathfinding out of box.
-* **Active development** - RouteConnector has not been updated for over three years. As I said previously, I am planning to continue active development of this plugin for a long period of time.
 * **Performance** - I have not done any benchmarks, but even with older versions users claimed that this plugin is multiple times faster than RouteConnector. A fix in the algorithm in version 1.2.0 made it around 30 times faster than it previously was.
 
 
