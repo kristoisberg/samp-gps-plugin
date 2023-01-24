@@ -14,6 +14,11 @@ public:
 	template <typename T>
 	T getValue(const std::string& key, T defaultValue)
 	{
+		if (!hasServerCfg_)
+		{
+			return defaultValue;
+		}
+
 		file_.clear();
 		file_.seekg(0, std::ios::beg);
 
@@ -38,4 +43,5 @@ public:
 
 private:
 	std::ifstream file_;
+	bool hasServerCfg_ = false;
 };
