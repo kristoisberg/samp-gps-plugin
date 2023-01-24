@@ -55,6 +55,8 @@ if(WIN32)
   add_definitions(-D_WIN32_WINNT=_WIN32_WINNT_WINXP
                   -D_CRT_SECURE_NO_WARNINGS
                   -DWIN32_LEAN_AND_MEAN)
+else()
+  add_definitions(-DLINUX)
 endif()
 
 file(GLOB_RECURSE GPS_SOURCES src/*.cpp lib/sdk/amxplugin.cpp lib/sdk/amxplugin2.cpp)
