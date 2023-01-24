@@ -10,6 +10,10 @@ ConfigReader::ConfigReader(const std::string& filename)
 
 	if (!file_.good())
 	{
-		throw std::runtime_error("Could not load configuration file " + filename + "!");
+		hasServerCfg_ = false;
+	}
+	else
+	{
+		hasServerCfg_ = true;
 	}
 }
