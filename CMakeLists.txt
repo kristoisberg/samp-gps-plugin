@@ -55,13 +55,15 @@ if(WIN32)
   add_definitions(-D_WIN32_WINNT=_WIN32_WINNT_WINXP
                   -D_CRT_SECURE_NO_WARNINGS
                   -DWIN32_LEAN_AND_MEAN)
+  set(EXPORT_DEFS_FILE "./src/windows-samp-plugin.def")
 else()
   add_definitions(-DLINUX)
+  set(EXPORT_DEFS_FILE "")
 endif()
 
 file(GLOB_RECURSE GPS_SOURCES src/*.cpp lib/sdk/amxplugin.cpp lib/sdk/amxplugin2.cpp)
 
-add_library(samp-gps-plugin MODULE ${GPS_SOURCES})
+add_library(samp-gps-plugin MODULE ${GPS_SOURCES} ${EXPORT_DEFS_FILE})
 
 set_target_properties(samp-gps-plugin PROPERTIES PREFIX "")
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "GPS")
